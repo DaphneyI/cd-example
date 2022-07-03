@@ -1,15 +1,17 @@
 version: 2.1
-orbs: 
-  aws-cli: circleci/aws-cli@3.1.1
 executors:
   default: 
     docker: 
       - image: cimg/base:stable
+commands: 
+  install-aws:
+    steps:
+      - python3 --version
 jobs:
   get-aws-version:
     executor: aws-cli/default
     steps:
-      - run: aws --version
+      - install-aws
 workflows:
   default:
     jobs:
