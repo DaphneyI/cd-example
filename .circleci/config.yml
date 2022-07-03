@@ -6,7 +6,7 @@ executors:
 commands:
   install-dependencies:
     steps:
-      - run: sudo apt install aws-cli
+      - run: sudo apt install awscli
       - run: sudo apt install ansible
 jobs:
   check:
