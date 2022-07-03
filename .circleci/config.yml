@@ -6,14 +6,17 @@ executors:
 commands: 
   install-aws:
     steps:
-      - run: python3 --version
-      - run: sudo apt-get -y install python3-pip
+      - run: curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+      - run: unzip awscliv2.zip
+      - run: sudo ./aws/install
+      - run: rm -r awscliv2.zip 
 
 jobs:
   get-aws-version:
     executor: default
     steps:
       - install-aws
+      - run: aws --version
 workflows:
   default:
     jobs:
