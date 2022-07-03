@@ -1,6 +1,8 @@
 version: 2.1
 executors:
-  default: cimg/base:stable
+  default: 
+    docker: 
+      - image: cimg/base:stable-20.04
 commands:
   install-dependencies:
     steps:
