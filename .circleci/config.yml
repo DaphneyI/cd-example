@@ -14,6 +14,7 @@ jobs:
             --role-arn ${AWS_ROLE_ARN} \
             --role-session-name "CIRCLECI-${CIRCLE_WORKFLOW_ID}-${CIRCLE_JOB}" \
             --web-identity-token "${CIRCLE_OIDC_TOKEN}" \
+            --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]'
             
       # - run: aws ec2 describe-instances
 
