@@ -6,8 +6,8 @@ executors:
 commands:
   install-dependencies:
     steps:
-      - run: apt install aws-cli
-      - run: apt install ansible
+      - run: sudo apt install aws-cli
+      - run: sudo apt install ansible
 jobs:
   check:
     executor: default
