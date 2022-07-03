@@ -1,8 +1,4 @@
 version: 2.1
-commands:
-  assume-role:
-    steps:
-
 jobs:
   aws:
     docker:
