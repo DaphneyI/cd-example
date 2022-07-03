@@ -8,16 +8,17 @@ jobs:
       AWS_DEFAULT_REGION: us-west-2
       AWS_ROLE_ARN: arn:aws:iam::726559158740:role/Udacitycicd
     steps:
-      - run:
-          name: authenticate
-          command: |
-            aws sts assume-role-with-web-identity \
-            --role-arn ${AWS_ROLE_ARN} \
-            --role-session-name "CIRCLECI-${CIRCLE_WORKFLOW_ID}-${CIRCLE_JOB}" \
-            --duration-seconds 3600 \
-            --web-identity-token $CIRCLE_OIDC_TOKEN
-      - run: aws sts get-caller-identity
-      - run: aws ec2 describe-instances
+      # - run:
+      #     name: authenticate
+      #     command: |
+      #       aws sts assume-role-with-web-identity \
+      #       --role-arn ${AWS_ROLE_ARN} \
+      #       --role-session-name "CIRCLECI-${CIRCLE_WORKFLOW_ID}-${CIRCLE_JOB}" \
+      #       --duration-seconds 3600 \
+      #       --web-identity-token $CIRCLE_OIDC_TOKEN
+      - run: echo $CIRCLE_OIDC_TOKEN
+      # - run: aws sts get-caller-identity
+      # - run: aws ec2 describe-instances
 
 workflows:
   play:
