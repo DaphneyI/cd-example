@@ -19,6 +19,9 @@ jobs:
             echo $AWS_ACCESS_KEY
             echo $AWS_SECRET_ACCESS_KEY 
             echo $AWS_SESSION_TOKEN
+            echo $AWS_ACCESS_KEY | cut -d ',' -f 1 >>> $AWS_ACCESS_KEY
+            echo $AWS_ACCESS_KEY
+
 
           
 workflows:
