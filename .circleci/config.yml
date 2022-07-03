@@ -9,7 +9,7 @@ commands:
       - run: python3 --version
 jobs:
   get-aws-version:
-    executor: aws-cli/default
+    executor: default
     steps:
       - install-aws
 workflows:
