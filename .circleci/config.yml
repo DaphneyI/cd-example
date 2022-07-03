@@ -6,7 +6,7 @@ executors:
 commands: 
   install-aws:
     steps:
-      - python3 --version
+      - run: python3 --version
 jobs:
   get-aws-version:
     executor: aws-cli/default
