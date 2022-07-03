@@ -1,24 +1,22 @@
 version: 2.1
-executors:
-  default: 
-    docker: 
-      - image: cimg/base:stable
-commands: 
-  install-aws:
-    steps:
-      - run: curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-      - run: unzip awscliv2.zip
-      - run: sudo ./aws/install
-      - run: rm -r awscliv2.zip 
 
 jobs:
-  get-aws-version:
-    executor: default
+  aws:
+    docker:
+      - image: amazon/aws-cli
+    environment:
+      AWS_DEFAULT_REGION: us-west-2
+      AWS_ROLE_ARN: arn:aws:iam::726559158740:role/Udacitycicd
     steps:
-      - install-aws
-      - run: aws --version
-workflows:
-  default:
-    jobs:
-      - get-aws-version
+      - name: authenticate
+        command: |
+          aws sts assume-role-with-web-identity \
+          --role-arn ${AWS_ROLE_ARN} \
+          --role-session-name "CIRCLECI-${CIRCLE_WORKFLOW_ID}-${CIRCLE_JOB}" \
+          --duration-seconds 3600 \
+          --web-identity-token ${CIRCLE_OIDC_TOKEN} 
+      - run: aws sts get-caller-identity
+      - run: aws ec2 describe-instances
+
+
 
