@@ -14,9 +14,7 @@ jobs:
             --role-arn ${AWS_ROLE_ARN} \
             --role-session-name "CIRCLECI-${CIRCLE_WORKFLOW_ID}-${CIRCLE_JOB}" \
             --web-identity-token "${CIRCLE_OIDC_TOKEN}" \
-            --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]' \
-            --output text
-            aws sts get-caller-identity
+            
       # - run: aws ec2 describe-instances
 
 workflows:
