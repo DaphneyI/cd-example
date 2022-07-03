@@ -22,6 +22,8 @@ jobs:
 workflows:
   play:
     jobs:
-      - aws
+      - aws:
+          context: 
+            - aws-federation
 
 
