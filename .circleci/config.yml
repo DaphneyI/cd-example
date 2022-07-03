@@ -7,6 +7,8 @@ commands:
   install-aws:
     steps:
       - run: python3 --version
+      - run: pip3 --version
+      - run: pip --version
 jobs:
   get-aws-version:
     executor: default
