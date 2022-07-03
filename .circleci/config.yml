@@ -1,0 +1,18 @@
+version: 2.1
+executors:
+  default: cimg/base:stable
+commands:
+  install-dependencies:
+    steps:
+      - run: apt install aws-cli
+      - run: apt install ansible
+jobs:
+  check:
+    executor: default
+    steps:
+      - install-dependencies
+workflows:
+  default:
+    jobs:
+      - check
+
