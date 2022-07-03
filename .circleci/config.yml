@@ -18,5 +18,9 @@ jobs:
       - run: aws sts get-caller-identity
       - run: aws ec2 describe-instances
 
+workflows:
+  play:
+    jobs:
+      - aws
 
 
