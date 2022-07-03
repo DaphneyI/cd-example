@@ -2,17 +2,19 @@ version: 2.1
 executors:
   default: 
     docker: 
-      - image: cimg/base:stable-20.04
+      - image: cimg/base:stable
 commands:
   install-dependencies:
     steps:
-      - run: sudo apt install awscli
-      - run: sudo apt install ansible
+      - run: sudo apt install awscli -y
+      - run: sudo apt install ansible -y
 jobs:
   check:
     executor: default
     steps:
       - install-dependencies
+      - run: aws --version
+      - run: ansible --version
 workflows:
   default:
     jobs:
