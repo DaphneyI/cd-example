@@ -18,7 +18,9 @@ jobs:
 
             echo $holder
 
-            echo $holder[0]
+            echo $holder[1]
+            echo $holder[2]
+            echo $holder[3]
             
 
 workflows:
