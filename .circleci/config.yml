@@ -10,16 +10,26 @@ jobs:
       - run:
           name: authenticate
           command: |
-            aws sts assume-role-with-web-identity \
+            read -r AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN \<<< \
+            $(aws sts assume-role-with-web-identity \
             --role-arn ${AWS_ROLE_ARN} \
             --role-session-name "CIRCLECI-${CIRCLE_WORKFLOW_ID}-${CIRCLE_JOB}" \
             --web-identity-token "${CIRCLE_OIDC_TOKEN}" \
-            --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]'
+            --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]')
+
+            echo $AWS_ACCESS_KEY
+
+            echo $AWS_SECRET_ACCESS_KEY 
+
+            echo $AWS_SESSION_TOKEN
+
+            if ! command -v cut &> /dev/null
+            then
+              echo "cut could not be found"
+            fi
 
 
 
-
-          
 workflows:
   play:
     jobs:
