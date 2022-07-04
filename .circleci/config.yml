@@ -39,6 +39,7 @@ commands:
 
             # check if the role was assumed
             aws sts get-caller-identity
+ 
 jobs:
   setup:
     docker:
@@ -46,6 +47,7 @@ jobs:
     steps:
       - assume-role-with-web-identity:
           role-arn: arn:aws:iam::726559158740:role/Udacitycicd
+      - run: echo $AWS_ACCESS_KEY_ID
       
 workflows:
   my-workflow:
