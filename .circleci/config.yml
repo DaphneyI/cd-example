@@ -10,12 +10,13 @@ jobs:
       - run:
           name: authenticate
           command: |
-            read -r AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN \<<< \
-            $(aws sts assume-role-with-web-identity \
+            aws sts assume-role-with-web-identity \
             --role-arn ${AWS_ROLE_ARN} \
             --role-session-name "CIRCLECI-${CIRCLE_WORKFLOW_ID}-${CIRCLE_JOB}" \
             --web-identity-token "${CIRCLE_OIDC_TOKEN}" \
-            --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]')
+            --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]' |
+            read AWS_ACCESS_KEY AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN
+            
 
             echo $AWS_ACCESS_KEY
 
