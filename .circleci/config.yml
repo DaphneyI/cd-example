@@ -18,9 +18,11 @@ jobs:
 
             echo $holder
 
-            echo $holder[1]
-            echo $holder[2]
-            echo $holder[3]
+            for i in ${!holder[@]}; do
+            echo "$AWS_ACCESS_KEY is ${holder[0]}"
+            echo "$AWS_SECRET_ACCESS_KEY is ${holder[1]}"
+            echo "$AWS_SESSION_TOKEN is ${holder[2]}"
+            done
             
 
 workflows:
