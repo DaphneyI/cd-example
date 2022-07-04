@@ -17,6 +17,10 @@ jobs:
             --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]') 
 
             echo $holder
+
+            for i in $holder; do
+              echo i
+            done
             
 
 workflows:
