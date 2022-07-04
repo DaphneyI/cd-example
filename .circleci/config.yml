@@ -18,9 +18,7 @@ jobs:
 
             echo $holder
 
-            for i in $holder; do
-              echo $i
-            done
+            echo $holder[0]
             
 
 workflows:
