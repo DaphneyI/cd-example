@@ -19,7 +19,7 @@ jobs:
             echo $holder
 
             for i in $holder; do
-              echo i
+              echo $i
             done
             
 
