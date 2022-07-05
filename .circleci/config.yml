@@ -75,7 +75,7 @@ commands:
             aws configure set aws_access_key_id ${ID}
             aws configure set aws_secret_access_key ${KEY}
             aws configure set aws_session_token ${SESSION_TOKEN}
-            aws cofigure set default_region << parameters.default_region >>
+            aws configure set default.region << parameters.default_region >>
 
             aws configure list
           
