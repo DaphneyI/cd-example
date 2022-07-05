@@ -58,9 +58,13 @@ commands:
         description: session token gotten from the assume-role job
         type: string
         default: ${AWS_SESSION_TOKEN}
+      default_region:
+        description: default region for the profile
+        type: string
     steps:
       - assume-role-with-web-identity
       - run:
+          default_region: us-west-2
           environment: 
             AWS_KEY_ID: << parameters.aws_access_key_id >>
             AWS_SECRET_KEY: << parameters.aws_secret_access_key >>
@@ -72,6 +76,7 @@ commands:
             aws configure set aws_access_key_id ${ID}
             aws configure set aws_secret_access_key ${KEY}
             aws configure set aws_session_token ${SESSION_TOKEN}
+            aws cofigure set default_region << parameters.default_region >>
 
             aws configure list
           
