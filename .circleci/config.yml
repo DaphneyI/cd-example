@@ -1,34 +1,37 @@
 version: 2.1
+
+parameters:
+  role-arn:
+    description: |
+      The Amazon Resource Name (ARN) of the role that the caller is assuming.
+      Role ARN must be configured for web identity.
+    type: string
+    default: arn:aws:iam::726559158740:role/Udacitycicd
+  role-session-name:
+    description: identifier for the assumed role session
+    type: string
+    default: "CircleCI-${CIRCLE_WORKFLOW_ID}-${CIRCLE_JOB}"
+  session-duration:
+    description: the time span of the session, measured in seconds
+    type: string
+    default: "3600"
+  web-identity-token:
+    description: circleci OIDC token to authenticate job to aws
+    type: string
+    default: $CIRCLE_OIDC_TOKEN
+
 commands:
   assume-role-with-web-identity:
-    parameters:
-      role-arn:
-        description: |
-          The Amazon Resource Name (ARN) of the role that the caller is assuming.
-          Role ARN must be configured for web identity.
-        type: string
-      role-session-name:
-        description: identifier for the assumed role session
-        type: string
-        default: "CircleCI-${CIRCLE_WORKFLOW_ID}-${CIRCLE_JOB}"
-      session-duration:
-        description: the time span of the session, measured in seconds
-        type: string
-        default: "3600"
-      web-identity-token:
-        description: circleci OIDC token to authenticate job to aws
-        type: string
-        default: $CIRCLE_OIDC_TOKEN
     steps:
       - run:
           command: |
             # use the OpenID Connect token to obtain AWS credentials
             read -r AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_SESSION_TOKEN \<<< \
             $(aws sts assume-role-with-web-identity \
-              --role-arn << parameters.role-arn >> \
-              --role-session-name << parameters.role-session-name >> \
-              --web-identity-token << parameters.web-identity-token >> \
-              --duration-seconds << parameters.session-duration >> \
+              --role-arn << pipeline.parameters.role-arn >> \
+              --role-session-name << pipeline.parameters.role-session-name >> \
+              --web-identity-token << pipeline.parameters.web-identity-token >> \
+              --duration-seconds << pipeline.parameters.session-duration >> \
               --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]' \
               --output text)    
 
@@ -39,20 +42,53 @@ commands:
 
             # check if the role was assumed
             aws sts get-caller-identity
- 
-jobs:
   setup:
+    description: |
+      store credentials gotten from the assume-role job to  ~/.aws/credentials and ~/.aws/config
+    parameters:
+      aws_access_key_id:
+        description: aws access key id gotten from the assume-role job.
+        type: string
+        default: ${AWS_ACCESS_KEY_ID}
+      aws_secret_access_key:
+        description: aws secret key gotten from the assume-role job
+        type: string
+        default: ${AWS_SECRET_ACCESS_KEY}
+      aws_session_token:
+        description: session token gotten from the assume-role job
+        type: string
+        default: ${AWS_SESSION_TOKEN}
+    steps:
+      - assume-role-with-web-identity
+      - run:
+          environment: 
+            AWS_KEY_ID: << parameters.aws_access_key_id >>
+            AWS_SECRET_KEY: << parameters.aws_secret_access_key >>
+            SESSION_TOKEN: << parameters.aws_session_token >>
+          command: |
+            ID=$(eval echo \$$AWS_KEY_ID)
+            KEY=$(eval echo \$$AWS_SECRET_KEY)
+            TOKEN=$(eval echo \$$SESSION_TOKEN)
+            aws configure set aws_access_key_id ${ID}
+            aws configure set aws_secret_access_key ${KEY}
+            aws configure set aws_session_token ${SESSION_TOKEN}
+
+            aws configure list
+          
+
+
+jobs:
+  configure:
     docker:
       - image: amazon/aws-cli
     steps:
-      - assume-role-with-web-identity:
-          role-arn: arn:aws:iam::726559158740:role/Udacitycicd
+      - setup
       - run: echo $AWS_ACCESS_KEY_ID
       
 workflows:
   my-workflow:
     jobs:
-      - setup:
+      - configure:
           context: 
             - aws-federation
       
