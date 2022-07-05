@@ -53,7 +53,7 @@ commands:
             echo $AWS_SECRET_ACCESS_KEY
             echo $AWS_SESSION_TOKEN
 
-            aws ec2 describe-instances
+            aws ec2 describe-instances --region us-west-2
   setup:
     description: |
       store credentials gotten from the assume-role job to  ~/.aws/credentials and ~/.aws/config
