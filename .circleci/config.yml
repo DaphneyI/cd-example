@@ -52,6 +52,8 @@ commands:
             echo $AWS_ACCESS_KEY_ID
             echo $AWS_SECRET_ACCESS_KEY
             echo $AWS_SESSION_TOKEN
+
+            aws ec2 describe-instances
   setup:
     description: |
       store credentials gotten from the assume-role job to  ~/.aws/credentials and ~/.aws/config
