@@ -61,6 +61,8 @@ jobs:
           region: us-west-2
       - run: cat ~/.aws/credentials 
       - run: cat ~/.aws/config
+      - run: echo "[all]" > inventory
+      - run: ls
       - run: aws ec2 describe-instances
       
 workflows:
