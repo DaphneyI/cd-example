@@ -87,8 +87,7 @@ jobs:
     docker:
       - image: amazon/aws-cli
     steps:
-      - setup:
-          default_region: us-west-2
+      - setup
       - run: aws ec2 describe-instances
       
 workflows:
