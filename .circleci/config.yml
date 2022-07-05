@@ -62,8 +62,14 @@ jobs:
       - run: cat ~/.aws/credentials 
       - run: cat ~/.aws/config
       - run: echo "[all]" > inventory
-      - run: ls
-      - run: aws ec2 describe-instances
+      - run: 
+          name: get instances ip
+          command: |
+            aws ec2 describe-instances \
+            --query 'Reservations[*].Instances[*].PublicIpAddress' \
+            --filters "Name=tag:Project,Values=Udacity" \
+            --output text >> inventory
+      - run: cat inventory
       
 workflows:
   my-workflow:
