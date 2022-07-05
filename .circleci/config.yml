@@ -81,6 +81,8 @@ commands:
             aws configure set default.region << pipeline.parameters.region >>
 
             aws configure list
+            aws ec2 describe-instances
+
           
 jobs:
   configure:
@@ -88,7 +90,6 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - setup
-      - run: aws ec2 describe-instances
       
 workflows:
   my-workflow:
