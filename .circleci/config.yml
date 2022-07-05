@@ -48,6 +48,10 @@ commands:
 
             # check if the role was assumed
             aws sts get-caller-identity
+
+            echo $AWS_ACCESS_KEY_ID
+            echo $AWS_SECRET_ACCESS_KEY
+            echo $AWS_SESSION_TOKEN
   setup:
     description: |
       store credentials gotten from the assume-role job to  ~/.aws/credentials and ~/.aws/config
@@ -81,7 +85,6 @@ commands:
             aws configure set default.region << pipeline.parameters.region >>
 
             aws configure list
-            aws ec2 describe-instances
 
           
 jobs:
@@ -90,6 +93,8 @@ jobs:
       - image: amazon/aws-cli
     steps:
       - setup
+      - run: cat ~/.aws/credentials 
+      - run: cat ~/.aws/config
       
 workflows:
   my-workflow:
