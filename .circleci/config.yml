@@ -19,6 +19,10 @@ parameters:
     description: circleci OIDC token to authenticate job to aws
     type: string
     default: $CIRCLE_OIDC_TOKEN
+  region:
+    description: region in which to perform tasks
+    type: string
+    default: us-west-2
 
 commands:
   assume-role-with-web-identity:
@@ -31,6 +35,8 @@ commands:
               --role-arn << pipeline.parameters.role-arn >> \
               --role-session-name << pipeline.parameters.role-session-name >> \
               --web-identity-token << pipeline.parameters.web-identity-token >> \
+              --region << pipeline.parameters.region >> \
+              --endpoint-url "https://sts.<< pipeline.parameters.region >>.amazonaws.com" \
               --duration-seconds << pipeline.parameters.session-duration >> \
               --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]' \
               --output text)    
@@ -58,9 +64,6 @@ commands:
         description: session token gotten from the assume-role job
         type: string
         default: ${AWS_SESSION_TOKEN}
-      default_region:
-        description: default region for the profile
-        type: string
     steps:
       - assume-role-with-web-identity
       - run:
@@ -75,7 +78,7 @@ commands:
             aws configure set aws_access_key_id ${ID}
             aws configure set aws_secret_access_key ${KEY}
             aws configure set aws_session_token ${SESSION_TOKEN}
-            aws configure set default.region << parameters.default_region >>
+            aws configure set default.region << pipeline.parameters.default_region >>
 
             aws configure list
           
