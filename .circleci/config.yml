@@ -64,7 +64,6 @@ commands:
     steps:
       - assume-role-with-web-identity
       - run:
-          default_region: us-west-2
           environment: 
             AWS_KEY_ID: << parameters.aws_access_key_id >>
             AWS_SECRET_KEY: << parameters.aws_secret_access_key >>
@@ -85,7 +84,8 @@ jobs:
     docker:
       - image: amazon/aws-cli
     steps:
-      - setup
+      - setup:
+          default_region: us-west-2
       - run: aws ec2 describe-instances
       
 workflows:
