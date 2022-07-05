@@ -61,6 +61,7 @@ jobs:
           region: us-west-2
       - run: cat ~/.aws/credentials 
       - run: cat ~/.aws/config
+      - run: aws ec2 describe-instances
       
 workflows:
   my-workflow:
