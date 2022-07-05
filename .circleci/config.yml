@@ -75,15 +75,13 @@ commands:
 
             aws configure list
           
-
-
 jobs:
   configure:
     docker:
       - image: amazon/aws-cli
     steps:
       - setup
-      - run: echo $AWS_ACCESS_KEY_ID
+      - run: aws ec2 describe-instances
       
 workflows:
   my-workflow:
