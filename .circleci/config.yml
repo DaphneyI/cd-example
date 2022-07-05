@@ -58,7 +58,7 @@ jobs:
     steps:
       - assume-role-with-web-identity:
           role-arn: arn:aws:iam::726559158740:role/Udacitycicd
-          region: arn:aws:iam::726559158740:role/Udacitycicd
+          region: us-west-2
       - run: cat ~/.aws/credentials 
       - run: cat ~/.aws/config
       
