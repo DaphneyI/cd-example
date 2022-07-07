@@ -72,7 +72,7 @@ commands:
       stack_name:
         description: the name of the stack
         type: string
-        default: UdacityProject3-${CIRCLE_WORKFLOW_ID}-${CIRCLE_JOB}
+        default: UdacityProject3-${CIRCLE_JOB}-${CIRCLE_WORKFLOW_ID:0:5}
       parameter_file:
         description: the path to the json parameter file
         type: string   
@@ -98,7 +98,7 @@ commands:
       stack_name:
         description: the name of the stack
         type: string
-        default: UdacityProject3-${CIRCLE_WORKFLOW_ID}-${CIRCLE_JOB}
+        default: UdacityProject3-${CIRCLE_JOB}-${CIRCLE_WORKFLOW_ID:0:5}
       run_when:  
         description: |
           since the whe arg cannot be directly used on commands,

@@ -11,6 +11,6 @@ Resources:
   KeyPair:
     Type: AWS::EC2::KeyPair
     Properties: 
-      KeyName: !Ref Environment
+      KeyName: !Sub ${Environment}-mykey
       KeyType: rsa
      
