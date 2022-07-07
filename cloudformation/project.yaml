@@ -5,6 +5,7 @@ Parameters:
   Environment:
     Description: prefix for resources provisioned with this script
     Type: String
+    Default: UdacityProject3
 
 Resources:
   KeyPair:
