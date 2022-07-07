@@ -99,16 +99,18 @@ commands:
         description: the name of the stack
         type: string
         default: UdacityProject3-${CIRCLE_WORKFLOW_ID}-${CIRCLE_JOB}
-      when:  
+      run_when:  
         description: |
           since the whe arg cannot be directly used on commands,
-          you specify it here as a parameter
+          you specify it here as a parameter. this determines when the command will be run
+        type: string
     steps:
       - run:  
           command: |
             aws cloudformation describe-stack-events \
             --stack-name << parameters.stack_name >>
-          when: << parameters.when >>
+          name: cloudformation stack debug 
+          when: << parameters.run_when >>
             
 
 jobs:
@@ -124,8 +126,8 @@ jobs:
       - run-cloudformation-script:
           template_file: cloudformation/project.yaml
           parameter_file: cloudformation/parameters.json
-      - cloudformation-events:
-          when: on_fail
+      - print-cloudformation-events:
+          run_when: on_fail
 
 workflows:
   my-workflow:
