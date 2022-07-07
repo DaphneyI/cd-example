@@ -84,13 +84,13 @@ commands:
             then
               aws cloudformation deploy \
               --template-file << parameters.template_file >> \
-              --stack-name << parameters.stack_name >> \
+              --stack-name << parameters.stack_name >> 
             else
               PARAMS=$(cat << parameters.parameter_file >>)
               aws cloudformation deploy \
               --template-file << parameters.template_file >> \
-              --parameter-overrides $PARAMS
-              --stack-name << parameters.stack_name >> \
+              --parameter-overrides $PARAMS \
+              --stack-name << parameters.stack_name >> 
             fi
 
 
