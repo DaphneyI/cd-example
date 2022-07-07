@@ -117,7 +117,7 @@ jobs:
           template_file: cloudformation/project.yaml
           parameter_file: cloudformation/parameters.json
       - cloudformation-events:
-          when: on_fail
+        when: on_fail
 
 workflows:
   my-workflow:
