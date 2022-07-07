@@ -1,0 +1,15 @@
+AWSTemplateFormatVresion: 2010-09-09
+Description: provision an ec2 instance with keypair and security group
+
+Parameters:
+  Environment:
+    Description: prefix for resources provisioned with this script
+    Type: String
+
+Resources:
+  KeyPair:
+    Type: AWS::EC2::KeyPair
+    Properties: 
+      KeyName: !Ref Environment
+      KeyType: rsa
+     

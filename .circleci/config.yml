@@ -51,16 +51,9 @@ commands:
             aws configure set aws_session_token $AWS_SESSION_TOKEN
             aws configure set default.region << parameters.region >>
          
-jobs:
-  configure:
-    docker:
-      - image: amazon/aws-cli
+  get-ec2-pub-ip:
+    description: get the list of public ips of ec2 instances and write them to the inventory file
     steps:
-      - assume-role-with-web-identity:
-          role-arn: arn:aws:iam::726559158740:role/Udacitycicd
-          region: us-west-2
-      - run: cat ~/.aws/credentials 
-      - run: cat ~/.aws/config
       - run: echo "[all]" > inventory
       - run: 
           name: get instances ip
@@ -70,11 +63,50 @@ jobs:
             --filters "Name=tag:Project,Values=Udacity" \
             --output text >> inventory
       - run: cat inventory
+
+  run-cloudformation-script:
+    parameters:
+      template_file:
+        description: the path to the cloudformation script
+        type: string
+      stack_name:
+        description: the name of the stack
+        type: string
+        default: UdacityProject3-${CIRCLE_WORKFLOW_ID}-${CIRCLE_JOB}
+      parameter_file:
+        description: the path to the json parameter file
+        type: string   
+    steps: 
+      - run: export PARAMS=$(cat << parameters.parameter_file >>) 
+      - run:
+        name: Create Cloudformation Stack
+        command: |
+          aws cloudformation deploy \
+            --template-file << parameters.template_file >> \
+            --parameter-overides=$PARAMS \
+            --stack-name << parameters.stack-name >> \
+
+jobs:
+  provision-infra:
+    description: provision the aws infra necessary to deploy code
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - assume-role-with-web-identity:
+          role-arn: arn:aws:iam::726559158740:role/Udacitycicd
+          region: us-west-2
+      - run-cloudformation-script:
+          template_file: ../cloudformation/project.yaml
+          parameter_file: ../cloudformation/parameters.json
+          
+      
+      
       
 workflows:
   my-workflow:
     jobs:
-      - configure:
+      - provision-infra:
           context: 
             - aws-federation
       
