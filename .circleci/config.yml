@@ -93,7 +93,6 @@ commands:
               --stack-name << parameters.stack_name >> 
             fi
 
-
 jobs:
   provision-infra:
     description: provision the aws infra necessary to deploy code
@@ -107,10 +106,7 @@ jobs:
       - run-cloudformation-script:
           template_file: cloudformation/project.yaml
           parameter_file: cloudformation/parameters.json
-          
-      
-      
-      
+                       
 workflows:
   my-workflow:
     jobs:
