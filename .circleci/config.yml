@@ -93,6 +93,16 @@ commands:
               --stack-name << parameters.stack_name >> 
             fi
 
+  cloudformation-events:
+    parameters:
+      stack_name:
+        description: the name of the stack
+        type: string
+        default: UdacityProject3-${CIRCLE_WORKFLOW_ID}-${CIRCLE_JOB}
+    steps:
+      - run:  aws cloudformation describe-stack-events --stack-name << parameters.stack_name >>
+            
+
 jobs:
   provision-infra:
     description: provision the aws infra necessary to deploy code
@@ -106,7 +116,9 @@ jobs:
       - run-cloudformation-script:
           template_file: cloudformation/project.yaml
           parameter_file: cloudformation/parameters.json
-                       
+      - cloudformation-events:
+          when: on_fail
+
 workflows:
   my-workflow:
     jobs:
