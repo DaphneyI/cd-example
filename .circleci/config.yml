@@ -79,12 +79,12 @@ commands:
     steps: 
       - run: export PARAMS=$(cat << parameters.parameter_file >>) 
       - run:
-        name: Create Cloudformation Stack
-        command: |
-          aws cloudformation deploy \
+          name: Create Cloudformation Stack
+          command: |
+            aws cloudformation deploy \
             --template-file << parameters.template_file >> \
             --parameter-overides=$PARAMS \
-            --stack-name << parameters.stack-name >> \
+            --stack-name << parameters.stack_name >> \
 
 jobs:
   provision-infra:
