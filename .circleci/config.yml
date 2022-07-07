@@ -83,7 +83,7 @@ commands:
           command: |
             aws cloudformation deploy \
             --template-file << parameters.template_file >> \
-            --parameter-overides=$PARAMS \
+            --parameter-overrides=$PARAMS \
             --stack-name << parameters.stack_name >> \
 
 jobs:
