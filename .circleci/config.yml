@@ -77,14 +77,22 @@ commands:
         description: the path to the json parameter file
         type: string   
     steps: 
-      - run: export PARAMS=$(cat << parameters.parameter_file >>) 
       - run:
-          name: Create Cloudformation Stack
+          name: Deploy Cloudformation Stack
           command: |
-            aws cloudformation deploy \
-            --template-file << parameters.template_file >> \
-            --parameter-overrides=$PARAMS \
-            --stack-name << parameters.stack_name >> \
+            if [ ! -s << parameters.parameter_file >> ]
+            then
+              aws cloudformation deploy \
+              --template-file << parameters.template_file >> \
+              --stack-name << parameters.stack_name >> \
+            else
+              PARAMS=$(cat << parameters.parameter_file >>)
+              aws cloudformation deploy \
+              --template-file << parameters.template_file >> \
+              --parameter-overrides $PARAMS
+              --stack-name << parameters.stack_name >> \
+            fi
+
 
 jobs:
   provision-infra:
