@@ -142,11 +142,9 @@ jobs:
           name: install ansible
           command: apk add --update ansible
       - run:
-          name: change into the ansible directory
-          command: cd ansible
-      - run:
           name: run playbook
           command: |
+            cd ansible
             ansible-playbook main.yml -i inventory
 
 
