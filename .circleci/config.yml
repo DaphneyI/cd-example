@@ -157,4 +157,7 @@ workflows:
       - provision-infra:
           context: 
             - aws-federation
+      - configure-infra:
+          requires:
+            - provision-infra
       
