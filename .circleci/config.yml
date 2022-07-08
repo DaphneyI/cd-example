@@ -63,6 +63,10 @@ commands:
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
             --output text >> inventory
       - run: cat inventory
+      - persist_to_workspace:
+          root: ansible
+          paths:
+           - inventory
 
   run-cloudformation-script:
     parameters:
@@ -136,6 +140,8 @@ jobs:
       - image: python:3.7-alpine3.11
     steps:
       - checkout
+      - attach_workspace:
+          at: ansible/
       - add_ssh_keys:
           fingerprints: ["12:38:1a:fe:e3:c6:d4:75:54:1c:f5:a0:51:7e:85:7d"]
       - run:
