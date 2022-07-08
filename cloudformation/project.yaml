@@ -39,6 +39,7 @@ Resources:
     Properties: 
       ImageId: ami-0d70546e43a941d70
       KeyName: !Ref KeyName
+      InstanceType: t2.nano
       BlockDeviceMappings:
         - DeviceName: /dev/sda1
           Ebs:
