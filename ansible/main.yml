@@ -1,0 +1,6 @@
+- name: setup ec2 instance with nodejs
+  hosts: all
+  user: ubuntu
+  become: true
+  roles:
+    - setup

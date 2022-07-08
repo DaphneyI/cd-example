@@ -54,6 +54,7 @@ commands:
   get-ec2-pub-ip:
     description: get the list of public ips of ec2 instances and write them to the inventory file
     steps:
+      - run: cd ansible
       - run: echo "[all]" > inventory
       - run: 
           name: get instances ip
@@ -115,7 +116,7 @@ commands:
 
 jobs:
   provision-infra:
-    description: provision the aws infra necessary to deploy code
+    description: provision the aws infra necessary to deploy code and create the inventory file
     docker:
       - image: amazon/aws-cli
     steps:
@@ -128,6 +129,27 @@ jobs:
           parameter_file: cloudformation/parameters.json
       - print-cloudformation-events:
           run_when: on_fail
+      - get-ec2-pub-ip
+
+  configure-infra:
+    description: install necessary binaries in the server
+    docker:
+      - image: python:3.7-alpine3.11
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints: ["12:38:1a:fe:e3:c6:d4:75:54:1c:f5:a0:51:7e:85:7d"]
+      - run:
+          name: install ansible
+          command: apk add --update ansible
+      - run:
+          name: change into the ansible directory
+          command: cd ansible
+      - run:
+          name: run playbook
+          command: |
+            ansible-playbook main.yml -i inventory
+
 
 workflows:
   my-workflow:

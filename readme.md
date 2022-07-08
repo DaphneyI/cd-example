@@ -29,6 +29,29 @@ aws sts assume-role-with-web-identity \
 --endpoint-url "https://sts.<region>.amazonaws.com" \
 ```
 
+$CIRCLE_OIDC_TOKEN variable is only available to jobs within a context. in circleci, contexts are created at the organization level (ie check under org settings). they make it possible to share certain environment variables only with jobs within the context. eg say i create a context called mycontext. i can decide to create n env variable within mycontext. this variable will be un available to all jobs except jobs within the mycontext context.
+
+add a job to a context:
+```
+workflows:
+  myworkflow:
+    jobs:
+      - build:
+          context: 
+           - mycontext
+```
+
 ## CircleCI Config
 this config specifies a `assume-role-with-web-identity` command
 this command contains steps to execute a script which  call `aws sts assume-role-with-web-identity` which generates an access id, secret key and session token. to use these credentials in other steps within the same job, we have to configure aws on the runner machine. to do this we use the command `aws configure set` to set the session token, access id, secret key and region. so subsequen aws commands in subsequent jobs would authenticate successfully as long as the session token is valid.
+
+
+
+please note that If deploying to your servers requires SSH access, you will need to add SSH keys to CircleCI.
+[click for more info on this ](https://circleci.com/docs/add-ssh-key)
+
+
+### Note about the cloudformation execution
+the cloudformation script here is executed using the deploy command. this is a combination of the create-stack and update-stack commands. it first checks if the stack exists if it does it updates it else it creates it.
+
+the ansible.cfg file specificies a default for host_key_checking (ie it disables it so that it doesnt ask to confirm if you want to add the key to the list of authorized keys in the circelci runnner).

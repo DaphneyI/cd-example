@@ -1,0 +1,27 @@
+---
+- name: get nodejs binary
+  shell: curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+
+- name: install nodejs with apt
+  apt:
+    update_cache: yes
+    name: nodejs
+
+- name: check that nodejs was corrctly installed
+  shell: node -v
+  register: check_node
+
+- name: print debug
+  debug:
+    var: check_node
+
+- name: copy file
+  copy:
+    src: index.js
+    dest: /tmp/nodejs
+    mode: preserve
+    
+- name: serve file
+  shell: node index.js
+  args:
+    chdir: /tmp/nodejs
