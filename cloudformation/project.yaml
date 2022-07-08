@@ -6,11 +6,46 @@ Parameters:
     Description: prefix for resources provisioned with this script
     Type: String
     Default: UdacityProject3
+  VpcId:
+    Description: vpc that the security group and ec2 instance should be created in
+    Type: String
+    Default: vpc-0104809558281317b
+  KeyName:
+    Description: keypair for the ec2 instance
+    Type: String
+    Default: UdacityProject3
 
 Resources:
-  KeyPair:
-    Type: AWS::EC2::KeyPair
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
     Properties: 
-      KeyName: !Sub ${Environment}-mykey
-      KeyType: rsa
-     
+      GroupDescription: allow http and ssh from anywhere
+      SecurityGroupIngress: 
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+      Tags: 
+        - Key: Name
+          Value: !Ref Environment
+      VpcId: !Ref VPC_ID
+
+  Server:
+    Type: AWS::EC2::Instance
+    Properties: 
+      ImageId: 
+      KeyName: !Ref KeyName
+      BlockDeviceMappings:
+        - DeviceName: /dev/sda1
+          Ebs:
+            VolumeSize: 8
+      NetworkInterfaces: 
+        - AssociatePublicIpAddress: "true"
+          DeviceIndex: "0"
+          GroupSet: 
+            - !Ref SecurityGroup
+
