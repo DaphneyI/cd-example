@@ -32,7 +32,7 @@ Resources:
       Tags: 
         - Key: Name
           Value: !Ref Environment
-      VpcId: !Ref VPC_ID
+      VpcId: !Ref VpcId
 
   Server:
     Type: AWS::EC2::Instance
