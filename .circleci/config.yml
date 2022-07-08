@@ -123,6 +123,9 @@ jobs:
     docker:
       - image: amazon/aws-cli
     steps:
+      - run:
+          name: install tar
+          command: yum install tar
       - checkout
       - assume-role-with-web-identity:
           role-arn: arn:aws:iam::726559158740:role/Udacitycicd
@@ -145,8 +148,10 @@ jobs:
       - add_ssh_keys:
           fingerprints: ["12:38:1a:fe:e3:c6:d4:75:54:1c:f5:a0:51:7e:85:7d"]
       - run:
-          name: install ansible
-          command: apk add --update ansible
+          name: install dependencies
+          command: |
+            apk add --update ansible
+            apk add tar
       - run:
           name: run playbook
           command: |
