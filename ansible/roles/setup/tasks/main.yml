@@ -9,6 +9,12 @@
     update_cache: yes
     name: npm
 
+- name: Create a directory for the node app
+  file:
+    path: /tmp/nodejs
+    state: directory
+    mode: '0755'
+
 - name: install pm2
   command: npm install pm2 -g 
 
