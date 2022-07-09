@@ -126,11 +126,11 @@ jobs:
       - assume-role-with-web-identity:
           role-arn: arn:aws:iam::726559158740:role/Udacitycicd
           region: us-west-2
-      # - run-cloudformation-script:
-      #     template_file: cloudformation/project.yaml
-      #     parameter_file: cloudformation/parameters.json
-      # - print-cloudformation-events:
-      #     run_when: on_fail
+      - run-cloudformation-script:
+          template_file: cloudformation/project.yaml
+          parameter_file: cloudformation/parameters.json
+      - print-cloudformation-events:
+          run_when: on_fail
       - get-ec2-pub-ip
       - persist_to_workspace:
           root: ansible
@@ -155,11 +155,11 @@ jobs:
           command: |
             apk add --update ansible 
             apk add tar gzip
-      # - run:
-      #     name: run playbook
-      #     command: |
-      #       cd ansible
-      #       ansible-playbook main.yml -i inventory
+      - run:
+          name: run playbook
+          command: |
+            cd ansible
+            ansible-playbook main.yml -i inventory
 
 
 workflows:
