@@ -55,14 +55,14 @@ commands:
     description: get the list of public ips of ec2 instances and write them to the inventory file
     steps:
       - run: cd ansible
-      - run: echo "[all]" > inventory
+      - run: echo "[all]" > ansible/inventory
       - run: 
           name: get instances ip
           command: |
             aws ec2 describe-instances \
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
             --output text >> ansible/inventory
-      - run: cat inventory
+      - run: cat ansible/inventory
      
   run-cloudformation-script:
     parameters:
