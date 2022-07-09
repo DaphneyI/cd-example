@@ -141,7 +141,7 @@ jobs:
   configure-infra:
     description: install necessary binaries in the server
     docker:
-      - image: python:3.7-alpine3.11
+      - image: python:3.10.5-alpine3.16
     steps:
       - checkout
       - attach_workspace:
