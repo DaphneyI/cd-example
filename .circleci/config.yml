@@ -149,17 +149,20 @@ jobs:
       - run: ls ansible
       - run: cat ansible/inventory
       - add_ssh_keys:
-          fingerprints: ["be:24:62:86:a8:88:b4:95:74:eb:73:56:27:6d:9d:85:7c:ec:e3:a1"]
+          fingerprints: [12:38:1a:fe:e3:c6:d4:75:54:1c:f5:a0:51:7e:85:7d]
       - run:
           name: install dependencies
           command: |
             apk add --update ansible 
-            apk add tar gzip
-      - run:
-          name: run playbook
-          command: |
-            cd ansible
-            ansible-playbook main.yml -i inventory
+            apk add tar gzip openssh coreutils
+      - run: |
+        ip=$(tail -n1 ansible/inventory)
+        ssh ubuntu@$ip  
+      # - run:
+      #     name: run playbook
+      #     command: |
+      #       cd ansible
+      #       ansible-playbook main.yml -i inventory
 
 
 workflows:
