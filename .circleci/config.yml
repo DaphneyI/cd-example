@@ -123,9 +123,9 @@ jobs:
           name: install tar
           command: yum install tar gzip -y
       - checkout
-      # - assume-role-with-web-identity:
-      #     role-arn: arn:aws:iam::726559158740:role/Udacitycicd
-      #     region: us-west-2
+      - assume-role-with-web-identity:
+          role-arn: arn:aws:iam::726559158740:role/Udacitycicd
+          region: us-west-2
       # - run-cloudformation-script:
       #     template_file: cloudformation/project.yaml
       #     parameter_file: cloudformation/parameters.json
