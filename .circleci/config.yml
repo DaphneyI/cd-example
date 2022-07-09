@@ -162,7 +162,6 @@ jobs:
             cd ansible
             ansible-playbook main.yml -i inventory
 
-
 workflows:
   my-workflow:
     jobs:
