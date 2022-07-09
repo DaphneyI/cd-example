@@ -155,9 +155,11 @@ jobs:
           command: |
             apk add --update ansible 
             apk add tar gzip openssh coreutils
-      - run: |
-        ip=$(tail -n1 ansible/inventory)
-        ssh ubuntu@$ip  
+      - run: 
+          name: get ip
+          command:
+            ip=$(tail -n1 ansible/inventory)
+            ssh ubuntu@$ip  
       # - run:
       #     name: run playbook
       #     command: |
