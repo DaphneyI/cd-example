@@ -125,7 +125,7 @@ jobs:
     steps:
       - run:
           name: install tar
-          command: yum install tar -y
+          command: yum install tar gzip -y
       - checkout
       - assume-role-with-web-identity:
           role-arn: arn:aws:iam::726559158740:role/Udacitycicd
@@ -150,8 +150,8 @@ jobs:
       - run:
           name: install dependencies
           command: |
-            apk add --update ansible
-            apk add tar
+            apk add --update ansible 
+            apk add tar gzip
       - run:
           name: run playbook
           command: |
