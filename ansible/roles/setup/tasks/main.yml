@@ -1,22 +1,14 @@
 ---
-- name: get nodejs binary
-  shell: curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-
 - name: install nodejs with apt
   apt:
     update_cache: yes
-    pkg: 
-      - nodejs
-      - npm
+    name: nodejs
 
-- name: check that nodejs was corrctly installed
-  shell: node -v
-  register: check_node
+- name: install npm with apt
+  apt:
+    update_cache: yes
+    name: npm
 
-- name: print debug
-  debug:
-    var: check_node
-    
 - name: install pm2
   command: npm install pm2 -g 
 
