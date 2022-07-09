@@ -63,11 +63,7 @@ commands:
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
             --output text >> ansible/inventory
       - run: cat inventory
-      - persist_to_workspace:
-          root: ansible
-          paths:
-           - inventory
-
+     
   run-cloudformation-script:
     parameters:
       template_file:
@@ -136,6 +132,11 @@ jobs:
       - print-cloudformation-events:
           run_when: on_fail
       - get-ec2-pub-ip
+      - persist_to_workspace:
+        root: ansible
+        paths:
+          - inventory
+
 
   configure-infra:
     description: install necessary binaries in the server
