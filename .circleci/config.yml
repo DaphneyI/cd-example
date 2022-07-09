@@ -61,7 +61,7 @@ commands:
           command: |
             aws ec2 describe-instances \
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
-            --output text >> inventory
+            --output text >> ansible/inventory
       - run: cat inventory
       - persist_to_workspace:
           root: ansible
