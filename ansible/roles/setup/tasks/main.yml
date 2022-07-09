@@ -5,7 +5,9 @@
 - name: install nodejs with apt
   apt:
     update_cache: yes
-    name: nodejs
+    pkg: 
+      - nodejs
+      - npm
 
 - name: check that nodejs was corrctly installed
   shell: node -v
@@ -14,6 +16,9 @@
 - name: print debug
   debug:
     var: check_node
+    
+- name: install pm2
+  command: npm install pm2 -g 
 
 - name: copy file
   copy:
@@ -22,6 +27,6 @@
     mode: preserve
     
 - name: serve file
-  shell: node index.js
+  shell: pm2 start index.js
   args:
     chdir: /tmp/nodejs
