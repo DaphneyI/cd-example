@@ -127,7 +127,7 @@ commands:
             curl --request POST \
             --url https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/pipeline \
             --header 'content-type: application/json' \
-            -u ${MY_TOKEN} \
+            -u ${MY_PERSONAL_TOKEN} \
             --data '{"parameters":{"run_rollback":true}}'
           # when: on_fail     
             
