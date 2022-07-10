@@ -165,12 +165,12 @@ jobs:
     docker:
       - image: alpine:latest
     steps:
-      # - checkout
+      - checkout
       # - attach_workspace:
       #     at: ansible/
       - run:
           name: install dependencies
-          command: apk add curl coreutils bash
+          command: apk add curl coreutils
       - run:
           name: check is website is up
           command: |
