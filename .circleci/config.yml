@@ -129,7 +129,7 @@ commands:
            -H 'Accept: application/json' \
            -H 'Circle-Token: 975647f1b5afe66539bea1682c90174b000acfd6' \
            -d '{ "parameters": { "run_rollback": true } }'
-          # when: on_fail     
+          when: on_fail     
             
 jobs:
   # create-environment:
@@ -224,15 +224,17 @@ jobs:
           command: |
             if true; then
               echo "yay"
+              return 1
             else
               echo "nay"
+              return 1
             fi   
-  # test:
-  #   docker:
-  #     - image: alpine:latest
-  #   steps:
-  #     - run: apk add --update curl
-  #     - set_rollback_param
+      - set_rollback_param
+  test:
+    docker:
+      - image: alpine:latest
+    steps:
+      - run: echo "it worked!"
       
 workflows:
   # deploy:
@@ -253,4 +255,10 @@ workflows:
   my-workflow:
     jobs:
       - fail
+  my-fail-workflow:
+    when:
+      equal: [true, << pipeline.parameters.run_rollback >>]
+    jobs:
+      - test
+  
       
