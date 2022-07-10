@@ -129,7 +129,7 @@ commands:
 
             
 jobs:
-  create_environment:
+  create-environment:
     description: provision the aws infra necessary to deploy code and create the inventory file
     docker:
       - image: amazon/aws-cli
@@ -152,7 +152,7 @@ jobs:
           paths:
             - inventory
 
-  deploy_application:
+  deploy-application:
     description: install the application and its dependencies on the provisioned environment
     docker:
       - image: python:3.10.5-alpine3.16
@@ -203,10 +203,10 @@ jobs:
 workflows:
   my-workflow:
     jobs:
-      - create_environment:
+      - create-environment:
           context: 
             - aws-federation
-      - deploy_application:
+      - deploy-application:
           requires:
             - create_environment
       - smoke-test:
