@@ -170,7 +170,7 @@ jobs:
       #     at: ansible/
       - run:
           name: install dependencies
-          command: apk add curl coreutils
+          command: apk add curl coreutils bash
       - run:
           name: check is website is up
           command: |
