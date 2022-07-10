@@ -1,4 +1,10 @@
 version: 2.1
+parameters:
+  stack_name:
+    description: the name of the stack
+    type: string
+    default: UdacityProject3-${CIRCLE_JOB}-${CIRCLE_WORKFLOW_ID:0:5}
+
 commands:
   assume-role-with-web-identity:
     parameters:
@@ -69,10 +75,6 @@ commands:
       template_file:
         description: the path to the cloudformation script
         type: string
-      stack_name:
-        description: the name of the stack
-        type: string
-        default: UdacityProject3-${CIRCLE_JOB}-${CIRCLE_WORKFLOW_ID:0:5}
       parameter_file:
         description: the path to the parameter file
         type: string   
@@ -85,20 +87,17 @@ commands:
             then
               aws cloudformation deploy \
               --template-file << parameters.template_file >> \
-              --stack-name << parameters.stack_name >> 
+              --stack-name << pipeline.parameters.stack_name >> 
             else   
               aws cloudformation deploy \
               --template-file << parameters.template_file >> \
               --parameter-overrides $PARAMS \
-              --stack-name << parameters.stack_name >> 
+              --stack-name << pipeline.parameters.stack_name >> 
             fi
 
   print-cloudformation-events:
+    description: prints the cloudforation events for debuggig failed cloudformation commands
     parameters:
-      stack_name:
-        description: the name of the stack
-        type: string
-        default: UdacityProject3-${CIRCLE_JOB}-${CIRCLE_WORKFLOW_ID:0:5}
       run_when:  
         description: |
           since the whe arg cannot be directly used on commands,
@@ -108,13 +107,27 @@ commands:
       - run:  
           command: |
             aws cloudformation describe-stack-events \
-            --stack-name << parameters.stack_name >>
+            --stack-name << pipeline.parameters.stack_name >>
           name: cloudformation stack debug 
           when: << parameters.run_when >>
-            
+      
+  
+  destroy_environment:
+    description: deletes the cloudformation stack created for the deployment during rollbackparameters:
+      run_when:  
+        description: |
+          since the when arg cannot be directly used on commands,
+          you specify it here as a parameter. this determines when the command will be run
+        type: string
+    steps:
+      run: |
+        aws cloudformation delete-stack \
+        --stack-name << pipeline.parameters.stack_name >>
+      when: << paramters.run_when >>
 
+            
 jobs:
-  provision-infra:
+  create_environment:
     description: provision the aws infra necessary to deploy code and create the inventory file
     docker:
       - image: amazon/aws-cli
@@ -137,8 +150,8 @@ jobs:
           paths:
             - inventory
 
-  configure-infra:
-    description: install necessary binaries in the server
+  deploy_application:
+    description: install the application and its dependencies on the provisioned environment
     docker:
       - image: python:3.10.5-alpine3.16
     steps:
@@ -182,16 +195,19 @@ jobs:
             else
               return 1
             fi
+      - destroy_environment:
+          run_when: on_fail
+
 workflows:
   my-workflow:
     jobs:
-      - provision-infra:
+      - create_environment:
           context: 
             - aws-federation
-      - configure-infra:
+      - deploy_application:
           requires:
-            - provision-infra
+            - create_environment
       - smoke-test:
           requires:
-            - configure-infra
+            - deploy_application
       
