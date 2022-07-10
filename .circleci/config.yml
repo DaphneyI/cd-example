@@ -124,16 +124,17 @@ commands:
     steps:
       - run: 
           command: |
-            curl --request POST \
-            --url https://circleci.com/api/v2/project/gh/CircleCI-Public/api-preview-docs/pipeline \
-            --header 'authorization: Basic REPLACE_BASIC_AUTH' \
-            --header 'content-type: application/json' \
-            --data '{
-                      "parameters":{
-                        "run_rollback_workflow": true
-                      }
-                    }'
- 
+            curl --location --request \
+            POST 'https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/pipeline' \
+            --header 'Content-Type: application/json' \
+            -u "${MY_TOKEN}:" \
+            -d '{
+                  "parameters": {
+                    "run_rollback_workflow": true
+                  }
+                }'
+
+            \
           # when: on_fail     
             
 jobs:
