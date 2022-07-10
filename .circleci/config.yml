@@ -141,7 +141,7 @@ commands:
       - run: 
           command: |
             curl --location --request \
-            POST 'https://circleci.com/api/v2/project/:vcs/:org/:repo/pipeline' \
+            POST 'https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/pipeline' \
             --header 'Content-Type: application/json' \
             -u "${CIRCLE_TOKEN}:" \
             -d '{
