@@ -130,7 +130,7 @@ commands:
            -u “${MY_PERSONAL_TOKEN}”
             -d ‘{
             “parameters”: {
-            “RUN_rollback”: true
+              “run_rollback”: "true"
             }
             }’
           # when: on_fail     
