@@ -125,7 +125,7 @@ commands:
       - run: 
           command: |
             curl --request POST \
-            --url https://circleci.com/api/v2/project/gh/DaphneyI / cd-example/pipeline \
+            --url https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/pipeline \
             --header 'content-type: application/json' \
             -u "${MY_TOKEN}" \
             --data '{"parameters":{"run_rollback":true}}'
@@ -220,7 +220,12 @@ jobs:
       - image: alpine:latest
     steps:
       - run: apk add --update curl
-      - set_rollback_param
+      - run:
+          command: |
+            curl --request GET \
+            --url https://circleci.com/api/v2/project/gh/DaphneyI/cd-example \
+            --header 'authorization: ${MY_TOKEN}'
+      # - set_rollback_param
       
 workflows:
   # deploy:
