@@ -113,7 +113,7 @@ commands:
       
   
   destroy_environment:
-    description: deletes the cloudformation stack created for the deployment during rollbackparameters:
+    description: deletes the cloudformation stack created for the deployment during rollbackparameters
       run_when:  
         description: |
           since the when arg cannot be directly used on commands,
