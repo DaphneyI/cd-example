@@ -14,13 +14,12 @@ commands:
   install-aws-cli:
     steps:
       - run:
-          command: |
-            AWS_CLI_VER=2.0.30
-            apk update && apk add --no-cache curl gcompat zip
-            curl -s https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${AWS_CLI_VER}.zip \
+        command: |
+          apk update && apk add --no-cache curl gcompat zip
+          curl -s https://awscli.amazonaws.com/awscli-exe-linux-x86_64-${AWS_CLI_VER}.zip \
             -o awscliv2.zip 
-            unzip awscliv2.zip
-            ./aws/install
+          unzip awscliv2.zip
+          ./aws/install
 
   assume-role-with-web-identity:
     parameters:
@@ -194,13 +193,6 @@ jobs:
   #           cd ansible
   #           ansible-playbook main.yml -i inventory
          
-  
-  test:
-    docker:
-      - image: python:3.10.5-alpine3.16
-    steps:
-      - install-aws-cli
-      - run: aws --version
 
   # smoke-test:
   #   description: check if the url is reachable via curl
@@ -225,7 +217,13 @@ jobs:
   #           fi
   #     - destroy_environment:
   #         run_when: on_fail
+  test:
+    run_rollback_workflow: true
+    steps:
+      - run: echo "it worked"
+    
 
+      
 workflows:
   my-workflow:
     jobs:
