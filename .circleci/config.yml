@@ -124,17 +124,11 @@ commands:
     steps:
       - run: 
           command: |
-            curl --location --request \
-            POST 'https://circleci.com/api/v2/project/gh/daphneyi/cd-example/pipeline' \
-            --header 'Content-Type: application/json' \
+            curl --request POST \
+            --url https://circleci.com/api/v2/project/gh/CircleCI-Public/api-preview-docs/pipeline \
+            --header 'content-type: application/json' \
             -u "${MY_TOKEN}:" \
-            -d '{
-                  "parameters": {
-                    "run_rollback_workflow": true
-                  }
-                }'
-
-            \
+            --data '{"parameters":{"deploy_prod":true}}'
           # when: on_fail     
             
 jobs:
