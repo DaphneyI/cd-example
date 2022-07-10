@@ -121,10 +121,11 @@ commands:
           you specify it here as a parameter. this determines when the command will be run
         type: string
     steps:
-      run: |
-        aws cloudformation delete-stack \
-        --stack-name << pipeline.parameters.stack_name >>
-      when: << paramters.run_when >>
+      - run: 
+          command: |
+            aws cloudformation delete-stack \
+            --stack-name << pipeline.parameters.stack_name >>
+          when: << parameters.run_when >>
 
             
 jobs:
