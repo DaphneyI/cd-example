@@ -124,11 +124,15 @@ commands:
     steps:
       - run: 
           command: |
-            curl --request POST \
-            --url https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/pipeline \
-            --header 'content-type: application/json' \
-            -u ${MY_PERSONAL_TOKEN} \
-            --data '{"parameters":{"run_rollback": true}}'
+           curl --location --request \
+           POST ‘https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/pipeline’
+           --header ‘Content-Type: application/json’ \
+           -u “${MY_PERSONAL_TOKEN}”
+            -d ‘{
+            “parameters”: {
+            “RUN_rollback”: true
+            }
+            }’
           # when: on_fail     
             
 jobs:
@@ -220,11 +224,6 @@ jobs:
       - image: alpine:latest
     steps:
       - run: apk add --update curl
-      - run:
-          command: |
-            curl --request GET \
-            --url https://circleci.com/api/v2/project/gh/DaphneyI/cd-example \
-            --header 'authorization: ${MY_TOKEN}'
       - set_rollback_param
       
 workflows:
