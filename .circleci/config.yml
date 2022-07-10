@@ -191,7 +191,7 @@ jobs:
       - run: 
           name: install dependencies
           command: |
-            apk add aws-cli
+            apk add --update aws-cli
             aws --version
 
   # smoke-test:
