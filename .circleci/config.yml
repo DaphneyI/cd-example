@@ -220,6 +220,7 @@ jobs:
     docker:
       - image: alpine
     steps:
+      - run: apk add --update curl
       - run:
           command: |
             if true; then
