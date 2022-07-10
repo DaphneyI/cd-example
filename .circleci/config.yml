@@ -172,11 +172,14 @@ jobs:
           name: install dependencies
           command: apk add curl coreutils
       - run:
-          name: check is website is up
+          name: check if website is up
           command: |
-            $URL=http://$(tail -n1 ansible/inventory):3000
-            echo $URL
-            
+            if curl -s --head https://blog.udacity.com
+            then
+              return 0
+            else
+              return 1
+            fi
 workflows:
   my-workflow:
     jobs:
