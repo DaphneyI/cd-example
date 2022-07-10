@@ -134,7 +134,7 @@ commands:
                   }
                 }'
  
-          when: on_fail     
+          # when: on_fail     
             
 jobs:
   # create-environment:
