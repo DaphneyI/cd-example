@@ -124,15 +124,11 @@ commands:
     steps:
       - run: 
           command: |
-           curl --location --request \
-           POST ‘https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/pipeline’
-           --header ‘Content-Type: application/json’ \
-           -u “${MY_PERSONAL_TOKEN}”
-            -d ‘{
-            “parameters”: {
-              “run_rollback”: "true"
-            }
-            }’
+           curl -X POST https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/pipeline \
+           -H 'Content-Type: application/json' \
+           -H 'Accept: application/json' \
+           -H 'Circle-Token: ${MY_PERSONAL_TOKEN}' \
+           -d '{ "parameters": { "run_rollback": true } }'
           # when: on_fail     
             
 jobs:
