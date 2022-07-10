@@ -208,8 +208,8 @@ workflows:
             - aws-federation
       - deploy-application:
           requires:
-            - create_environment
+            - create-environment
       - smoke-test:
           requires:
-            - deploy_application
+            - deploy-application
       
