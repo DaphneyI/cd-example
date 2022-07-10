@@ -224,6 +224,7 @@ jobs:
     docker:
       - image: alpine:latest
     steps:
+      - apk add --update curl
       - set_rollback_param
       
 workflows:
