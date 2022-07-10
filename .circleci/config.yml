@@ -81,7 +81,7 @@ commands:
           name: Deploy Cloudformation Stack
           command: |
             PARAMS=$(cat << parameters.parameter_file >>)
-            if [ -z << parameters.parameter_file >> ]
+            if [ -z $PARAMS ]
             then
               aws cloudformation deploy \
               --template-file << parameters.template_file >> \
