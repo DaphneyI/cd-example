@@ -139,17 +139,18 @@ commands:
     description: changes the run_rollback_workflow parameter to true
     steps:
       - run: 
-      command: |
-          curl --location --request POST 'https://circleci.com/api/v2/project/:vcs/:org/:repo/pipeline' \
-          --header 'Content-Type: application/json' \
-          -u "${CIRCLE_TOKEN}:" \
-          -d '{
-                        "parameters": {
-                          "run_rollback_workflow": true
-                        }
-                      }'
+          command: |
+            curl --location --request \
+            POST 'https://circleci.com/api/v2/project/:vcs/:org/:repo/pipeline' \
+            --header 'Content-Type: application/json' \
+            -u "${CIRCLE_TOKEN}:" \
+            -d '{
+                  "parameters": {
+                    "run_rollback_workflow": true
+                  }
+                }'
  
-      when: on_fail     
+          when: on_fail     
             
 jobs:
   create-environment:
