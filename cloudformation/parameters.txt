@@ -1,3 +1,2 @@
-$URL=http://$(tail -n1 ansible/inventory):3000
-            echo $URL
+
             
