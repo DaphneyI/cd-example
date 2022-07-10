@@ -174,7 +174,7 @@ jobs:
       - run:
           name: check is website is up
           command: |
-            $URL=http://$(tail -n1 ansible/inventory)
+            $URL=http://$(tail -n1 ansible/inventory):3000
             echo $URL
             
 workflows:
