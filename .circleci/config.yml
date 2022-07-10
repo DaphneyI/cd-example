@@ -112,21 +112,14 @@ commands:
 
   print-cloudformation-events:
     description: prints the cloudforation events for debuggig failed cloudformation commands
-    parameters:
-      run_when:  
-        description: |
-          since the whe arg cannot be directly used on commands,
-          you specify it here as a parameter. this determines when the command will be run
-        type: string
     steps:
       - run:  
           command: |
             aws cloudformation describe-stack-events \
             --stack-name << pipeline.parameters.stack_name >>
           name: cloudformation stack debug 
-          when: << parameters.run_when >>
+          when: on_fail
       
-  
   destroy_environment:
     description: deletes the cloudformation stack created for the deployment during rollback
     parameters:
@@ -140,101 +133,124 @@ commands:
           command: |
             aws cloudformation delete-stack \
             --stack-name << pipeline.parameters.stack_name >>
-          when: << parameters.run_when >>
 
+
+  set_rollback_param:
+    description: changes the run_rollback_workflow parameter to true
+    steps:
+      - run: 
+      command: |
+          curl --location --request POST 'https://circleci.com/api/v2/project/:vcs/:org/:repo/pipeline' \
+          --header 'Content-Type: application/json' \
+          -u "${CIRCLE_TOKEN}:" \
+          -d '{
+                        "parameters": {
+                          "run_rollback_workflow": true
+                        }
+                      }'
+ 
+      when: on_fail     
             
 jobs:
-  # create-environment:
-  #   description: provision the aws infra necessary to deploy code and create the inventory file
-  #   docker:
-  #     - image: amazon/aws-cli
-  #   steps:
-  #     - run:
-  #         name: install tar
-  #         command: yum install tar gzip -y
-  #     - checkout
-  #     - assume-role-with-web-identity:
-  #         role-arn: arn:aws:iam::726559158740:role/Udacitycicd
-  #         region: us-west-2
-  #     - run-cloudformation-script:
-  #         template_file: cloudformation/project.yaml
-  #         parameter_file: cloudformation/parameters.txt
-  #     - print-cloudformation-events:
-  #         run_when: on_fail
-  #     - get-ec2-pub-ip
-  #     - persist_to_workspace:
-  #         root: ansible
-  #         paths:
-  #           - inventory
-        # - destroy_environment:
-        #     run_when: on_fail
+  create-environment:
+    description: provision the aws infra necessary to deploy code and create the inventory file
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - run:
+          name: install tar
+          command: yum install tar gzip -y
+      - checkout
+      - assume-role-with-web-identity:
+          role-arn: arn:aws:iam::726559158740:role/Udacitycicd
+          region: us-west-2
+      - run-cloudformation-script:
+          template_file: cloudformation/project.yaml
+          parameter_file: cloudformation/parameters.txt
+      - print-cloudformation-events:
+      - get-ec2-pub-ip
+      - persist_to_workspace:
+          root: ansible
+          paths:
+            - inventory
+      - set_rollback_param
+       
 
-  # deploy-application:
-  #   description: install the application and its dependencies on the provisioned environment
-  #   docker:
-  #     - image: python:3.10.5-alpine3.16
-  #   steps:
-  #     - checkout
-  #     - attach_workspace:
-  #         at: ansible/
-  #     - run: ls ansible
-  #     - run: cat ansible/inventory
-  #     - add_ssh_keys:
-  #         fingerprints: 
-  #           - "12:38:1a:fe:e3:c6:d4:75:54:1c:f5:a0:51:7e:85:7d"
-  #     - run:
-  #         name: install dependencies
-  #         command: |
-  #           apk add --update ansible 
-  #           apk add tar gzip 
-  #     - run:
-  #         name: run playbook
-  #         command: |
-  #           cd ansible
-  #           ansible-playbook main.yml -i inventory
+  deploy-application:
+    description: install the application and its dependencies on the provisioned environment
+    docker:
+      - image: python:3.10.5-alpine3.16
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ansible/
+      - run: ls ansible
+      - run: cat ansible/inventory
+      - add_ssh_keys:
+          fingerprints: 
+            - "12:38:1a:fe:e3:c6:d4:75:54:1c:f5:a0:51:7e:85:7d"
+      - run:
+          name: install dependencies
+          command: |
+            apk add --update ansible 
+            apk add tar gzip 
+      - run:
+          name: run playbook
+          command: |
+            cd ansible
+            ansible-playbook main.yml -i inventory
+      - set_rollback_param
          
 
-  # smoke-test:
-  #   description: check if the url is reachable via curl
-  #   docker:
-  #     - image: alpine:latest
-  #   steps:
-  #     - checkout
-  #     - attach_workspace:
-  #         at: ansible/
-  #     - run:
-  #         name: install dependencies
-  #         command: apk add curl coreutils
-  #     - run:
-  #         name: check if website is up
-  #         command: |
-  #           URL=http://$(tail -n1 ansible/inventory):3000
-  #           if curl -s --head ${URL}
-  #           then
-  #             return 1
-  #           else
-  #             return 1
-  #           fi
-  #     - destroy_environment:
-  #         run_when: on_fail
-  test:
-    run_rollback_workflow: true
+  smoke-test:
+    description: check if the url is reachable via curl
+    docker:
+      - image: alpine:latest
     steps:
-      - run: echo "it worked"
-    
+      - checkout
+      - attach_workspace:
+          at: ansible/
+      - run:
+          name: install dependencies
+          command: apk add curl coreutils
+      - run:
+          name: check if website is up
+          command: |
+            URL=http://$(tail -n1 ansible/inventory):3000
+            if curl -s --head ${URL}
+            then
+              return 1
+            else
+              return 1
+            fi
+      - set_rollback_param
+
+  rollback:
+    description: destroy all resources created for the deployment
+    docker:
+      - image: amzon/aws-cli
+    steps:
+      - assume-role-with-web-identity:
+          role-arn: arn:aws:iam::726559158740:role/Udacitycicd
+          region: us-west-2 
+      - destroy_environment 
+         
 
       
 workflows:
-  my-workflow:
+  deploy:
     jobs:
-      # - create-environment:
-      #     context: 
-      #       - aws-federation
-      # - deploy-application:
-      #     requires:
-      #       - create-environment
-      # - smoke-test:
-      #     requires:
-      #       - deploy-application
-      - test
+      - create-environment:
+          context: 
+            - aws-federation
+      - deploy-application:
+          requires:
+            - create-environment
+      - smoke-test:
+          requires:
+            - deploy-application
+  rollback_workflow:
+    when: << pipeline.parameters.run_rollback_workflow >> 
+    jobs:
+      - rollback
       
