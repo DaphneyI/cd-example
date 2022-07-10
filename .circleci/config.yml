@@ -125,7 +125,7 @@ commands:
       - run: 
           command: |
             curl --location --request \
-            POST 'https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/pipeline' \
+            POST 'https://circleci.com/api/v2/project/gh/daphneyi/cd-example/pipeline' \
             --header 'Content-Type: application/json' \
             -u "${MY_TOKEN}:" \
             -d '{
