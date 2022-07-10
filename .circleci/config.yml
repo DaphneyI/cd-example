@@ -127,6 +127,7 @@ commands:
             curl --request POST \
             --url https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/pipeline \
             --header 'content-type: application/json' \
+            --header 'authorization: ${MY_TOKEN}' \
             -u "${MY_TOKEN}" \
             --data '{"parameters":{"run_rollback":true}}'
           # when: on_fail     
@@ -225,7 +226,7 @@ jobs:
             curl --request GET \
             --url https://circleci.com/api/v2/project/gh/DaphneyI/cd-example \
             --header 'authorization: ${MY_TOKEN}'
-      # - set_rollback_param
+      - set_rollback_param
       
 workflows:
   # deploy:
