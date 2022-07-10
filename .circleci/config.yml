@@ -214,13 +214,25 @@ jobs:
   #         role-arn: arn:aws:iam::726559158740:role/Udacitycicd
   #         region: us-west-2 
   #     - destroy_environment 
-         
-  test:
+
+
+  fail:
     docker:
-      - image: alpine:latest
+      - image: alpine
     steps:
-      - run: apk add --update curl
-      - set_rollback_param
+      - run:
+          command: |
+            if true; then
+              echo "yay"
+            else
+              echo "nay"
+            fi   
+  # test:
+  #   docker:
+  #     - image: alpine:latest
+  #   steps:
+  #     - run: apk add --update curl
+  #     - set_rollback_param
       
 workflows:
   # deploy:
@@ -240,5 +252,5 @@ workflows:
   #     - rollback
   my-workflow:
     jobs:
-      - test
+      - fail
       
