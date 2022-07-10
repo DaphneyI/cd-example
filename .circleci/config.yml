@@ -74,19 +74,19 @@ commands:
         type: string
         default: UdacityProject3-${CIRCLE_JOB}-${CIRCLE_WORKFLOW_ID:0:5}
       parameter_file:
-        description: the path to the json parameter file
+        description: the path to the parameter file
         type: string   
     steps: 
       - run:
           name: Deploy Cloudformation Stack
           command: |
-            if [ ! -s << parameters.parameter_file >> ]
+            PARAMS=$(cat << parameters.parameter_file >>)
+            if [ -z << parameters.parameter_file >> ]
             then
               aws cloudformation deploy \
               --template-file << parameters.template_file >> \
               --stack-name << parameters.stack_name >> 
-            else
-              PARAMS=$(cat << parameters.parameter_file >>)
+            else   
               aws cloudformation deploy \
               --template-file << parameters.template_file >> \
               --parameter-overrides $PARAMS \
