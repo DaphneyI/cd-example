@@ -175,7 +175,7 @@ jobs:
       - run:
           name: check if website is up
           command: |
-            $URL=http://$(tail -n1 ansible/inventory):3000
+            URL=http://$(tail -n1 ansible/inventory):3000
             if curl -s --head ${URL}
             then
               return 0
