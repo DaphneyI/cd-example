@@ -98,11 +98,11 @@ commands:
               --parameter-overrides $PARAMS \
               --stack-name << pipeline.parameters.stack_name >> 
             fi
-        - run: 
-            name: save stack name to a file
-            command: |
-              mkdir -p workspace
-              echo << pipeline.parameters.stack_name >> > workspace/stack_name.txt
+      - run: 
+          name: save stack name to a file
+          command: |
+            mkdir -p workspace
+            echo << pipeline.parameters.stack_name >> > workspace/stack_name.txt
 
   print-cloudformation-events:
     description: prints the cloudforation events for debuggig failed cloudformation commands
