@@ -82,10 +82,11 @@ commands:
       - run:
           name: delete the STACK_NAME env var if it exists
           command: |
-
-            if "$(curl --request GET \
+            delete="$(curl --request GET \
             --url https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/envvar \
             -u ${CIRCLE_TOKEN} | grep 'STACK_NAME')"
+
+            if [ ! -z $delete ]
             then
             #  check the value the var
               curl --request GET \
