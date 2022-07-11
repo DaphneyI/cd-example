@@ -234,7 +234,9 @@ jobs:
 workflows:
   test:
     jobs:
-      - test
+      - test:
+          context: 
+            - aws-federation
   # deploy:
   #   when:
   #     equal: [deploy, << pipeline.parameters.action >>]
