@@ -91,6 +91,7 @@ commands:
             --header 'content-type: application/json' \
             -u ${CIRCLE_TOKEN} \
             --data '{"name":"STACK_NAME","value":"'"<< parameters.stack_name >>"'"}'
+            echo ${STACK_NAME}
       - run:
           name: Deploy Cloudformation Stack
           command: |
@@ -122,8 +123,7 @@ commands:
     steps:
       - run: 
           command: |
-            aws cloudformation delete-stack \
-            --stack-name ${STACK_NAME}
+            aws cloudformation delete-stack --stack-name ${STACK_NAME}
 
   set_action_rollback:
     description: changes the run_rollback_workflow parameter to true
