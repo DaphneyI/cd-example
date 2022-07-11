@@ -273,40 +273,40 @@ jobs:
       #     role-arn: arn:aws:iam::726559158740:role/Udacitycicd
       #     region: us-west-2 
       # - run: aws cloudformation delete-stack --stack-name new
-  curl:
-    docker:
-      - image: amazon/aws-cli
-    steps:
-     - run: 
-         command: |
-           curl --request GET \
-           --url https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/envvar/STACK_NAME \
-           -u ${CIRCLE_TOKEN}
+  # curl:
+  #   docker:
+  #     - image: amazon/aws-cli
+  #   steps:
+  #    - run: 
+  #        command: |
+  #          curl --request GET \
+  #          --url https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/envvar/STACK_NAME \
+  #          -u ${CIRCLE_TOKEN}
 workflows:
-  test:
-    jobs:
-      - test
+  # test:
+  #   jobs:
+  #     - test
           # context: 
           #   - aws-federation
-      - curl
-  # deploy:
-  #   when:
-  #     equal: [deploy, << pipeline.parameters.action >>]
-  #   jobs:
-  #     - create-environment:
-  #         context: 
-  #           - aws-federation
-  #     - deploy-application:
-  #         requires:
-  #           - create-environment
-  #     - smoke-test:
-  #         requires:
-  #           - deploy-application
-  # rollback_workflow:
-  #   when:
-  #     equal: [rollback, << pipeline.parameters.action >>]
-  #   jobs:
-  #     - rollback:
-  #         context:
-  #           - aws-federation
+      # - curl
+  deploy:
+    when:
+      equal: [deploy, << pipeline.parameters.action >>]
+    jobs:
+      - create-environment:
+          context: 
+            - aws-federation
+      - deploy-application:
+          requires:
+            - create-environment
+      - smoke-test:
+          requires:
+            - deploy-application
+  rollback_workflow:
+    when:
+      equal: [rollback, << pipeline.parameters.action >>]
+    jobs:
+      - rollback:
+          context:
+            - aws-federation
   
