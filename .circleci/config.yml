@@ -5,10 +5,10 @@ parameters:
     type: string
     default: UdacityProject3-${CIRCLE_JOB}-${CIRCLE_WORKFLOW_ID:0:5}
 
-  run_rollback:
-    description: determines whether to roll back deployment
-    type: boolean
-    default: false
+  action:
+    type: enum
+    enum: [deploy, rollback]
+    default: deploy
 
 commands:
   assume-role-with-web-identity:
@@ -128,7 +128,7 @@ commands:
            -H 'Content-Type: application/json' \
            -H 'Accept: application/json' \
            -H 'Circle-Token: 975647f1b5afe66539bea1682c90174b000acfd6' \
-           -d '{ "parameters": { "run_rollback": true } }'
+           -d '{ "parameters": { "action": rollback } }'
           when: on_fail     
             
 jobs:
@@ -254,11 +254,13 @@ workflows:
   #   jobs:
   #     - rollback
   my-workflow:
+    when:
+      equal: [deploy, << pipeline.parameters.action >>]
     jobs:
       - fail
   my-fail-workflow:
     when:
-      equal: [true, << pipeline.parameters.run_rollback >>]
+      equal: [rollback, << pipeline.parameters.action >>]
     jobs:
       - test
   
