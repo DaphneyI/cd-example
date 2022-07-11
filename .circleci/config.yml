@@ -124,8 +124,8 @@ commands:
       - run: 
           command: |
            curl -u ${CIRCLECI_TOKEN}: \
-           -X POST --header "Content-Type: application/json" -d '{ \
-           "parameters": {"action": "rollback"}}' \
+           -X POST --header "Content-Type: application/json" \
+           -d '{ "parameters": {"action": "rollback"} }' \
             https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/pipeline
 
           when: on_fail     
