@@ -222,11 +222,20 @@ jobs:
     docker:
       - image: alpine:latest
     steps:
+<<<<<<< HEAD
      - run: apk add curl
      - run-cloudformation-script
+=======
+     - run-cloudformation-script:
+         parameter_file: ""
+         template_file: ""
+>>>>>>> ddaf9941e9230db944bb55e4c6f34e1d83a9a9c4
 
       
 workflows:
+  test:
+    jobs:
+      - test
   # deploy:
   #   when:
   #     equal: [deploy, << pipeline.parameters.action >>]
