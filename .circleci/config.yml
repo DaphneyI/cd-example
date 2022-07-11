@@ -126,7 +126,7 @@ commands:
            curl -X POST https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/pipeline \
            -H 'Content-Type: application/json' \
            -H 'Accept: application/json' \
-           -H 'Circle-Token: $CIRCLE_TOKEN' \
+           -H 'Circle-Token: "${CIRCLE_TOKEN}"' \
            -d '{ "parameters": { "action": "rollback" } }'
           when: on_fail     
             
