@@ -55,3 +55,7 @@ please note that If deploying to your servers requires SSH access, you will need
 the cloudformation script here is executed using the deploy command. this is a combination of the create-stack and update-stack commands. it first checks if the stack exists if it does it updates it else it creates it.
 
 the ansible.cfg file specificies a default for host_key_checking (ie it disables it so that it doesnt ask to confirm if you want to add the key to the list of authorized keys in the circelci runnner).
+
+to implement rollback for this roject, i created another workflow to run if any of the jobs fail. to do this i had to first create a pipeline parameter of type enum with 2 possible values ie deploy and rollback. so under workflows i added the conditon that the deploy workflow would run when the pipeline parameter(in this case "action") has value "deploy"(which is the default value by the way) and the rollback workflow would run when the value is "rollback". to finish off i added an additional step to each job to set the pipeline parameter "action" to "rollback" using the circleci API and a API token  if any of the jobs fail.
+
+to create the token, click onyour user name in the circleci dashboard and on the left nav bar, you will find the button to create the token.
