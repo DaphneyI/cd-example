@@ -167,10 +167,10 @@ jobs:
     steps:
       - checkout
       - run:
-        name: install dependencies
-        command: |
-          apk add --update ansible 
-          apk add tar gzip curl
+          name: install dependencies
+          command: |
+            apk add --update ansible 
+            apk add tar gzip curl
       - attach_workspace:
           at: /tmp/workspace
       - run: ls /tmp && ls /tmp/workspace
