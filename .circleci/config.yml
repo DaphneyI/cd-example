@@ -215,6 +215,9 @@ jobs:
     steps:
       - attach_workspace:
           at: /tmp/workspace
+      - run:
+          name: install dependencies
+          command: yum install tar gzip -y
       - assume-role-with-web-identity:
           role-arn: arn:aws:iam::726559158740:role/Udacitycicd
           region: us-west-2 
