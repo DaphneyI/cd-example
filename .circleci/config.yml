@@ -283,8 +283,6 @@ workflows:
   test:
     jobs:
       - test
-          context: 
-            - aws-federation
       - curl
   # deploy:
   #   when:
