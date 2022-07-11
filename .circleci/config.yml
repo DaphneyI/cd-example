@@ -82,11 +82,11 @@ commands:
       - run:
           name: delete the STACK_NAME env var if it exists
           command: |
-            echo "this the the value of the envvar before the script ${STACK_NAME}"
 
-            delete="$(curl --request GET \
+            read delete \<<< \
+            "$(curl --request GET \
             --url https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/envvar \
-            -u ${CIRCLE_TOKEN} | grep -w STACK_NAME)"
+            -u ${CIRCLE_TOKEN} | grep STACK_NAME)"
 
             if $delete
             then
@@ -110,9 +110,7 @@ commands:
             echo "workflow is = ${CIRCLE_WORKFLOW_ID}"
             echo "workflow id 0:5 = ${CIRCLE_WORKFLOW_ID:0:5}"
 
-            curl --request GET \
-              --url https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/envvar/STACK_NAME \
-              -u ${CIRCLE_TOKEN}
+            
               
   run-cloudformation-script:
     parameters:
@@ -261,13 +259,22 @@ jobs:
       #     role-arn: arn:aws:iam::726559158740:role/Udacitycicd
       #     region: us-west-2 
       # - run: aws cloudformation delete-stack --stack-name new
-
+  curl:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+     - run: 
+         command: |
+           curl --request GET \
+           --url https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/envvar/STACK_NAME \
+           -u ${CIRCLE_TOKEN}
 workflows:
   test:
     jobs:
       - test
           # context: 
           #   - aws-federation
+      - curl
   # deploy:
   #   when:
   #     equal: [deploy, << pipeline.parameters.action >>]
