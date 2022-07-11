@@ -222,7 +222,7 @@ jobs:
     docker:
       - image: alpine:latest
     steps:
-      - run apk add curl
+      - run: apk add curl
       - run-cloudformation-script:
           template_file: ""  
           parameter_file: ""
