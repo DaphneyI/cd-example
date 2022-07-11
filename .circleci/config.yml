@@ -86,12 +86,14 @@ commands:
       - run:
           name: save stack name in environment variable
           command: |
+            stack_name=$(echo << parameters.stack_name >>)
             curl --request POST \
             --url https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/envvar \
             --header 'content-type: application/json' \
             -u ${CIRCLE_TOKEN} \
-            --data '{"name":"STACK_NAME","value":"'"<< parameters.stack_name >>"'"}'
-            echo "stack name is << parameters.stack_name >>"
+            --data '{"name":"STACK_NAME","value":"'"${stack_name}"'"}'
+            echo "parameter.stack_name is << parameters.stack_name >>"
+            echo "stack_name should be ${stack_name}"
             echo "workflow is = ${CIRCLE_WORKFLOW_ID}"
             echo "workflow id 0:5 = ${CIRCLE_WORKFLOW_ID:0:5}"
       - run:
@@ -218,7 +220,7 @@ jobs:
           role-arn: arn:aws:iam::726559158740:role/Udacitycicd
           region: us-west-2 
       - run: echo $STACK_NAME
-      - run: aws cloudformation delete-stack --stack-name ${STACK_NAME}
+      - run: aws cloudformation delete-stack --stack-name
       # 
   # test:
   #   docker:
