@@ -80,6 +80,7 @@ commands:
         default: UdacityProject3-${CIRCLE_JOB}-${CIRCLE_WORKFLOW_ID:0:5}
     steps: 
       - run:
+          name: delete the STACK_NAME env var if it exists
           command: |
             echo "this the the value of the envvar before the script ${STACK_NAME}"
 
@@ -95,6 +96,9 @@ commands:
               --url https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/envvar/STACK_NAME \
               -u ${CIRCLE_TOKEN}
             fi
+      - run:
+          name: recreate the STACK_NAME env
+          command: |
             curl --request POST \
             --url https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/envvar \
             --header 'content-type: application/json' \
