@@ -1,14 +1,13 @@
 version: 2.1
 parameters:
-  stack_name:
-    description: the name of the stack
-    type: string
-    default: UdacityProject3-${CIRCLE_JOB}-${CIRCLE_WORKFLOW_ID:0:5}
-
   action:
     type: enum
     enum: [deploy, rollback]
     default: deploy
+  stack_name:
+    description: the name of the stack
+    type: string
+    default: UdacityProject3-${CIRCLE_JOB}-${CIRCLE_WORKFLOW_ID:0:5} 
 
 commands:
   assume-role-with-web-identity:
@@ -65,15 +64,15 @@ commands:
   get-ec2-pub-ip:
     description: get the list of public ips of ec2 instances and write them to the inventory file
     steps:
-      - run: cd ansible
-      - run: echo "[all]" > ansible/inventory
+      - run: mkdir -p workspace
+      - run: echo "[all]" > workspace/inventory
       - run: 
           name: get instances ip
           command: |
             aws ec2 describe-instances \
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
-            --output text >> ansible/inventory
-      - run: cat ansible/inventory
+            --output text >> workspace/inventory
+      - run: cat workspace/inventory
      
   run-cloudformation-script:
     parameters:
@@ -82,7 +81,7 @@ commands:
         type: string
       parameter_file:
         description: the path to the parameter file
-        type: string   
+        type: string       
     steps: 
       - run:
           name: Deploy Cloudformation Stack
@@ -99,6 +98,11 @@ commands:
               --parameter-overrides $PARAMS \
               --stack-name << pipeline.parameters.stack_name >> 
             fi
+        - run: 
+            name: save stack name to a file
+            command: |
+              mkdir -p workspace
+              echo << pipeline.parameters.stack_name >> > workspace/stack_name.txt
 
   print-cloudformation-events:
     description: prints the cloudforation events for debuggig failed cloudformation commands
@@ -115,8 +119,9 @@ commands:
     steps:
       - run: 
           command: |
+            STACK_NAME=$(cat /tmp/workspace/stack_name.txt)
             aws cloudformation delete-stack \
-            --stack-name << pipeline.parameters.stack_name >>
+            --stack-name $STACK_NAME
 
   set_action_rollback:
     description: changes the run_rollback_workflow parameter to true
@@ -149,12 +154,12 @@ jobs:
       - print-cloudformation-events
       - get-ec2-pub-ip
       - persist_to_workspace:
-          root: ansible
+          root: workspace
           paths:
             - inventory
+            - stack_name.txt
       - set_action_rollback
        
-
   deploy-application:
     description: install the application and its dependencies on the provisioned environment
     docker:
@@ -162,9 +167,9 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: ansible/
-      - run: ls ansible
-      - run: cat ansible/inventory
+          at: /tmp/workspace
+      - run: ls /tmp && ls /tmp/workspace
+      - run: cat workspace/inventory
       - add_ssh_keys:
           fingerprints: 
             - "12:38:1a:fe:e3:c6:d4:75:54:1c:f5:a0:51:7e:85:7d"
@@ -177,10 +182,9 @@ jobs:
           name: run playbook
           command: |
             cd ansible
-            ansible-playbook main.yml -i inventory
+            ansible-playbook main.yml -i /tmp/workspace/inventory
       - set_action_rollback
          
-
   smoke-test:
     description: check if the url is reachable via curl
     docker:
@@ -188,14 +192,14 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: ansible/
+          at: /tmp/workspace
       - run:
           name: install dependencies
           command: apk add curl coreutils
       - run:
           name: check if website is up
           command: |
-            URL=http://$(tail -n1 ansible/inventory):3000
+            URL=http://$(tail -n1 /tmp/workspace/inventory):3000
             if curl -s --head ${URL}
             then
               return 1
@@ -209,12 +213,12 @@ jobs:
     docker:
       - image: amazon/aws-cli
     steps:
+      - attach_workspace:
+          at: /tmp/workspace
       - assume-role-with-web-identity:
           role-arn: arn:aws:iam::726559158740:role/Udacitycicd
           region: us-west-2 
       - destroy_environment 
-
-
 
       
 workflows:
