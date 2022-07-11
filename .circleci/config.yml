@@ -92,7 +92,7 @@ commands:
             --url https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/envvar \
             --header 'content-type: application/json' \
             -u ${CIRCLE_TOKEN} \
-            --data '{"name":"STACK_NAME","value":"$value"}'
+            --data '{"name":"STACK_NAME","value":"'"$value"'"}'
       # - run:
       #     name: Deploy Cloudformation Stack
       #     command: |
