@@ -166,11 +166,11 @@ jobs:
       - image: python:3.10.5-alpine3.16
     steps:
       - checkout
-       - run:
-          name: install dependencies
-          command: |
-            apk add --update ansible 
-            apk add tar gzip curl
+      - run:
+        name: install dependencies
+        command: |
+          apk add --update ansible 
+          apk add tar gzip curl
       - attach_workspace:
           at: /tmp/workspace
       - run: ls /tmp && ls /tmp/workspace
