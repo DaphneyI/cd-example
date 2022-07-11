@@ -220,7 +220,7 @@ jobs:
           role-arn: arn:aws:iam::726559158740:role/Udacitycicd
           region: us-west-2 
       - run: echo $STACK_NAME
-      - run: aws cloudformation delete-stack --stack-name
+      - run: aws cloudformation delete-stack --stack-name $STACK_NAME
       # 
   # test:
   #   docker:
