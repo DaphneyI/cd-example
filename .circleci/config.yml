@@ -139,14 +139,14 @@ jobs:
           name: install dependencies
           command: yum install tar gzip curl -y
       - checkout
-        - run:
-            name: save stack name in environment variable
-            command: |
-              curl --request POST \
-              --url https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/envvar \
-              --header 'content-type: application/json' \
-              -u ${CIRCLE_TOKEN} \
-              --data '{"name":"STACK_NAME","value":"<< pipeline.parameters.stack_name >>"}'
+      - run:
+          name: save stack name in environment variable
+          command: |
+            curl --request POST \
+            --url https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/envvar \
+            --header 'content-type: application/json' \
+            -u ${CIRCLE_TOKEN} \
+            --data '{"name":"STACK_NAME","value":"<< pipeline.parameters.stack_name >>"}'
       - assume-role-with-web-identity:
           role-arn: arn:aws:iam::726559158740:role/Udacitycicd
           region: us-west-2
