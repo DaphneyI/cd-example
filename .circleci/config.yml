@@ -207,7 +207,7 @@ jobs:
   rollback:
     description: destroy all resources created for the deployment
     docker:
-      - image: amzon/aws-cli
+      - image: amazon/aws-cli
     steps:
       - assume-role-with-web-identity:
           role-arn: arn:aws:iam::726559158740:role/Udacitycicd
