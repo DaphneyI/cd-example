@@ -235,6 +235,8 @@ workflows:
     when:
       equal: [rollback, << pipeline.parameters.action >>]
     jobs:
-      - rollback
+      - rollback:
+          context:
+            - aws-federation
   
       
