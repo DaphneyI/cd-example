@@ -4,11 +4,7 @@ parameters:
     type: enum
     enum: [deploy, rollback]
     default: deploy
-  stack_name:
-    description: the name of the stack
-    type: string
-    default: UdacityProject3-${CIRCLE_JOB}-${CIRCLE_WORKFLOW_ID:0:5} 
-
+  
 commands:
   assume-role-with-web-identity:
     parameters:
@@ -81,8 +77,21 @@ commands:
         type: string
       parameter_file:
         description: the path to the parameter file
-        type: string       
+        type: string  
+      stack_name:
+        description: the name of the stack
+        type: string
+        default: UdacityProject3-${CIRCLE_JOB}-${CIRCLE_WORKFLOW_ID:0:5} 
+     
     steps: 
+      - run:
+          name: save stack name in environment variable
+          command: |
+            curl --request POST \
+            --url https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/envvar \
+            --header 'content-type: application/json' \
+            -u ${CIRCLE_TOKEN} \
+            --data '{"name":"STACK_NAME","value":"<< parameters.stack_name >>"}'
       - run:
           name: Deploy Cloudformation Stack
           command: |
@@ -91,12 +100,12 @@ commands:
             then
               aws cloudformation deploy \
               --template-file << parameters.template_file >> \
-              --stack-name << pipeline.parameters.stack_name >> 
+              --stack-name ${STACK_NAME}
             else   
               aws cloudformation deploy \
               --template-file << parameters.template_file >> \
               --parameter-overrides $PARAMS \
-              --stack-name << pipeline.parameters.stack_name >> 
+              --stack-name ${STACK_NAME} 
             fi
      
   print-cloudformation-events:
@@ -105,7 +114,7 @@ commands:
       - run:  
           command: |
             aws cloudformation describe-stack-events \
-            --stack-name << pipeline.parameters.stack_name >>
+            --stack-name ${STACK_NAME}
           name: cloudformation stack debug 
           when: on_fail
       
@@ -139,14 +148,6 @@ jobs:
           name: install dependencies
           command: yum install tar gzip curl -y
       - checkout
-      - run:
-          name: save stack name in environment variable
-          command: |
-            curl --request POST \
-            --url https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/envvar \
-            --header 'content-type: application/json' \
-            -u ${CIRCLE_TOKEN} \
-            --data '{"name":"STACK_NAME","value":"<< pipeline.parameters.stack_name >>"}'
       - assume-role-with-web-identity:
           role-arn: arn:aws:iam::726559158740:role/Udacitycicd
           region: us-west-2
