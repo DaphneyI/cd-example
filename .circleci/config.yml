@@ -128,7 +128,7 @@ commands:
            -H 'Content-Type: application/json' \
            -H 'Accept: application/json' \
            -H 'Circle-Token: 975647f1b5afe66539bea1682c90174b000acfd6' \
-           -d '{ "parameters": { "action": rollback } }'
+           -d '{ "parameters": { "action": "rollback" } }'
           when: on_fail     
             
 jobs:
