@@ -222,10 +222,15 @@ jobs:
     docker:
       - image: alpine:latest
     steps:
-     - run-cloudformation-script
+     - run-cloudformation-script:
+         parameter_file: ""
+         template_file: ""
 
       
 workflows:
+  test:
+    jobs:
+      - test
   # deploy:
   #   when:
   #     equal: [deploy, << pipeline.parameters.action >>]
