@@ -228,7 +228,7 @@ jobs:
               echo "nay"
               return 1
             fi   
-      - set_rollback_param
+      - set_action_rollback
   test:
     docker:
       - image: alpine:latest
