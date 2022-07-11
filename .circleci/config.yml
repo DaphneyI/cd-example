@@ -90,6 +90,10 @@ commands:
 
             if $delete
             then
+              curl --request GET \
+              --url https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/envvar/STACK_NAME \
+              -u ${CIRCLE_TOKEN}
+
               curl --request DELETE \
               --url https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/envvar/STACK_NAME \
               -u ${CIRCLE_TOKEN}
@@ -105,6 +109,10 @@ commands:
             echo "parameter.stack_name is << parameters.stack_name >>"
             echo "workflow is = ${CIRCLE_WORKFLOW_ID}"
             echo "workflow id 0:5 = ${CIRCLE_WORKFLOW_ID:0:5}"
+
+            curl --request GET \
+              --url https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/envvar/STACK_NAME \
+              -u ${CIRCLE_TOKEN}
               
   run-cloudformation-script:
     parameters:
@@ -161,93 +169,93 @@ commands:
           when: on_fail     
             
 jobs:
-  create-environment:
-    description: provision the aws infra necessary to deploy code and create the inventory file
-    docker:
-      - image: amazon/aws-cli
-    steps:
-      - run:
-          name: install dependencies
-          command: yum install tar gzip curl -y
-      - checkout
-      - assume-role-with-web-identity:
-          role-arn: arn:aws:iam::726559158740:role/Udacitycicd
-          region: us-west-2
-      - set_stack_name_envvar
-      - run-cloudformation-script:
-          template_file: cloudformation/project.yaml
-          parameter_file: cloudformation/parameters.txt
-      - print-cloudformation-events
-      - get-ec2-pub-ip
-      - persist_to_workspace:
-          root: workspace
-          paths:
-            - inventory
-      - set_action_rollback
-       
-  deploy-application:
-    description: install the application and its dependencies on the provisioned environment
-    docker:
-      - image: python:3.10.5-alpine3.16
-    steps:
-      - checkout
-      - run:
-          name: install dependencies
-          command: |
-            apk add --update ansible 
-            apk add tar gzip curl
-      - attach_workspace:
-          at: /tmp/workspace
-      - run: ls /tmp && ls /tmp/workspace
-      - run: cat /tmp/workspace/inventory && cat /tmp/workspace/stack_name.txt
-      - add_ssh_keys:
-          fingerprints: 
-            - "12:38:1a:fe:e3:c6:d4:75:54:1c:f5:a0:51:7e:85:7d"
-      - run:
-          name: run playbook
-          command: |
-            cd ansible
-            ansible-playbook main.yml -i /tmp/workspace/inventory
-      - set_action_rollback
-         
-  smoke-test:
-    description: check if the url is reachable via curl
-    docker:
-      - image: alpine:latest
-    steps:
-      - checkout
-      - run:
-          name: install dependencies
-          command: apk add curl coreutils 
-      - run:
-          name: check if website is up
-          command: |
-            URL=http://$(tail -n1 /tmp/workspace/inventory):3000
-            if curl -s --head ${URL}
-            then
-              return 1
-            else
-              return 1
-            fi
-      - set_action_rollback
-
-  rollback:
-    description: destroy all resources created for the deployment
-    docker:
-      - image: amazon/aws-cli
-    steps:
-      - assume-role-with-web-identity:
-          role-arn: arn:aws:iam::726559158740:role/Udacitycicd
-          region: us-west-2 
-      - run: echo $STACK_NAME
-      - run: aws cloudformation delete-stack --stack-name $STACK_NAME
-  
-
-  # test:
+  # create-environment:
+  #   description: provision the aws infra necessary to deploy code and create the inventory file
   #   docker:
   #     - image: amazon/aws-cli
   #   steps:
+  #     - run:
+  #         name: install dependencies
+  #         command: yum install tar gzip curl -y
+  #     - checkout
+  #     - assume-role-with-web-identity:
+  #         role-arn: arn:aws:iam::726559158740:role/Udacitycicd
+  #         region: us-west-2
   #     - set_stack_name_envvar
+  #     - run-cloudformation-script:
+  #         template_file: cloudformation/project.yaml
+  #         parameter_file: cloudformation/parameters.txt
+  #     - print-cloudformation-events
+  #     - get-ec2-pub-ip
+  #     - persist_to_workspace:
+  #         root: workspace
+  #         paths:
+  #           - inventory
+  #     - set_action_rollback
+       
+  # deploy-application:
+  #   description: install the application and its dependencies on the provisioned environment
+  #   docker:
+  #     - image: python:3.10.5-alpine3.16
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: install dependencies
+  #         command: |
+  #           apk add --update ansible 
+  #           apk add tar gzip curl
+  #     - attach_workspace:
+  #         at: /tmp/workspace
+  #     - run: ls /tmp && ls /tmp/workspace
+  #     - run: cat /tmp/workspace/inventory && cat /tmp/workspace/stack_name.txt
+  #     - add_ssh_keys:
+  #         fingerprints: 
+  #           - "12:38:1a:fe:e3:c6:d4:75:54:1c:f5:a0:51:7e:85:7d"
+  #     - run:
+  #         name: run playbook
+  #         command: |
+  #           cd ansible
+  #           ansible-playbook main.yml -i /tmp/workspace/inventory
+  #     - set_action_rollback
+         
+  # smoke-test:
+  #   description: check if the url is reachable via curl
+  #   docker:
+  #     - image: alpine:latest
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: install dependencies
+  #         command: apk add curl coreutils 
+  #     - run:
+  #         name: check if website is up
+  #         command: |
+  #           URL=http://$(tail -n1 /tmp/workspace/inventory):3000
+  #           if curl -s --head ${URL}
+  #           then
+  #             return 1
+  #           else
+  #             return 1
+  #           fi
+  #     - set_action_rollback
+
+  # rollback:
+  #   description: destroy all resources created for the deployment
+  #   docker:
+  #     - image: amazon/aws-cli
+  #   steps:
+  #     - assume-role-with-web-identity:
+  #         role-arn: arn:aws:iam::726559158740:role/Udacitycicd
+  #         region: us-west-2 
+  #     - run: echo $STACK_NAME
+  #     - run: aws cloudformation delete-stack --stack-name $STACK_NAME
+  
+
+  test:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - set_stack_name_envvar
 
       # - assume-role-with-web-identity:
       #     role-arn: arn:aws:iam::726559158740:role/Udacitycicd
@@ -255,30 +263,29 @@ jobs:
       # - run: aws cloudformation delete-stack --stack-name new
 
 workflows:
-  # test:
-  #   jobs:
-  #     - test
+  test:
+    jobs:
+      - test
           # context: 
           #   - aws-federation
-  deploy:
-    when:
-      equal: [deploy, << pipeline.parameters.action >>]
-    jobs:
-      - create-environment:
-          context: 
-            - aws-federation
-      - deploy-application:
-          requires:
-            - create-environment
-      - smoke-test:
-          requires:
-            - deploy-application
-  rollback_workflow:
-    when:
-      equal: [rollback, << pipeline.parameters.action >>]
-    jobs:
-      - rollback:
-          context:
-            - aws-federation
-  
+  # deploy:
+  #   when:
+  #     equal: [deploy, << pipeline.parameters.action >>]
+  #   jobs:
+  #     - create-environment:
+  #         context: 
+  #           - aws-federation
+  #     - deploy-application:
+  #         requires:
+  #           - create-environment
+  #     - smoke-test:
+  #         requires:
+  #           - deploy-application
+  # rollback_workflow:
+  #   when:
+  #     equal: [rollback, << pipeline.parameters.action >>]
+  #   jobs:
+  #     - rollback:
+  #         context:
+  #           - aws-federation
   
