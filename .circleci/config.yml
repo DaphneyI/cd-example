@@ -98,12 +98,7 @@ commands:
               --parameter-overrides $PARAMS \
               --stack-name << pipeline.parameters.stack_name >> 
             fi
-      - run: 
-          name: save stack name to a file
-          command: |
-            mkdir -p workspace
-            echo << pipeline.parameters.stack_name >> > workspace/stack_name.txt
-
+     
   print-cloudformation-events:
     description: prints the cloudforation events for debuggig failed cloudformation commands
     steps:
@@ -119,13 +114,20 @@ commands:
     steps:
       - run: 
           command: |
-            STACK_NAME=$(cat /tmp/workspace/stack_name.txt)
             aws cloudformation delete-stack \
-            --stack-name $STACK_NAME
+            --stack-name ${STACK_NAME}
 
   set_action_rollback:
     description: changes the run_rollback_workflow parameter to true
     steps:
+      - run:
+          name: save stack name in environment variable
+          command: |
+            curl --request POST \
+            --url https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/envvar \
+            --header 'content-type: application/json' \
+            -u ${CIRCLE_TOKEN}
+            --data '{"name":"STACK_NAME","value":"<< pipeline.parameters.stack_name >>"}'
       - run: 
           command: |
            curl -u ${CIRCLE_TOKEN}: \
@@ -157,7 +159,6 @@ jobs:
           root: workspace
           paths:
             - inventory
-            - stack_name.txt
       - set_action_rollback
        
   deploy-application:
@@ -193,9 +194,7 @@ jobs:
       - checkout
       - run:
           name: install dependencies
-          command: apk add curl coreutils tar gzip
-      - attach_workspace:
-          at: /tmp/workspace
+          command: apk add curl coreutils 
       - run:
           name: check if website is up
           command: |
