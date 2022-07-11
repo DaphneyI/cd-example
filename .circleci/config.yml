@@ -120,14 +120,14 @@ commands:
   set_action_rollback:
     description: changes the run_rollback_workflow parameter to true
     steps:
-      # - run: 
-      #     command: |
-      #      curl -u ${CIRCLE_TOKEN}: \
-      #      -X POST --header "Content-Type: application/json" \
-      #      -d '{ "parameters": {"action": "rollback"} }' \
-      #       https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/pipeline
+      - run: 
+          command: |
+           curl -u ${CIRCLE_TOKEN}: \
+           -X POST --header "Content-Type: application/json" \
+           -d '{ "parameters": {"action": "rollback"} }' \
+            https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/pipeline
 
-      #     when: on_fail     
+          when: on_fail     
             
 jobs:
   # create-environment:
