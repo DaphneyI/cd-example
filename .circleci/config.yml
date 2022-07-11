@@ -123,7 +123,7 @@ commands:
     steps:
       - run: 
           command: |
-           curl -u ${CIRCLECI_TOKEN}: \
+           curl -u ${CIRCLE_TOKEN}: \
            -X POST --header "Content-Type: application/json" \
            -d '{ "parameters": {"action": "rollback"} }' \
             https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/pipeline
