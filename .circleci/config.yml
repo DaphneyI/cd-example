@@ -88,11 +88,11 @@ commands:
           command: |
             value=$(echo << parameters.stack_name >>)
             echo $value
-            # curl --request POST \
-            # --url https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/envvar \
-            # --header 'content-type: application/json' \
-            # -u ${CIRCLE_TOKEN} \
-            # --data '{"name":"STACK_NAME","value":"<< parameters.stack_name >>"}'
+            curl --request POST \
+            --url https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/envvar \
+            --header 'content-type: application/json' \
+            -u ${CIRCLE_TOKEN} \
+            --data '{"name":"STACK_NAME","value":"$value"}'
       # - run:
       #     name: Deploy Cloudformation Stack
       #     command: |
@@ -222,6 +222,7 @@ jobs:
     docker:
       - image: alpine:latest
     steps:
+     - run: apk add curl
      - run-cloudformation-script
 
       
