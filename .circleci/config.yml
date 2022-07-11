@@ -120,135 +120,123 @@ commands:
   set_action_rollback:
     description: changes the run_rollback_workflow parameter to true
     steps:
-      # - run: 
-      #     command: |
-      #      curl -u ${CIRCLE_TOKEN}: \
-      #      -X POST --header "Content-Type: application/json" \
-      #      -d '{ "parameters": {"action": "rollback"} }' \
-      #       https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/pipeline
+      - run: 
+          command: |
+           curl -u ${CIRCLE_TOKEN}: \
+           -X POST --header "Content-Type: application/json" \
+           -d '{ "parameters": {"action": "rollback"} }' \
+            https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/pipeline
 
-      #     when: on_fail     
+          when: on_fail     
             
 jobs:
-  # create-environment:
-  #   description: provision the aws infra necessary to deploy code and create the inventory file
-  #   docker:
-  #     - image: amazon/aws-cli
-  #   steps:
-  #     - run:
-  #         name: install tar
-  #         command: yum install tar gzip curl -y
-  #     - checkout
-  #     - assume-role-with-web-identity:
-  #         role-arn: arn:aws:iam::726559158740:role/Udacitycicd
-  #         region: us-west-2
-  #     - run-cloudformation-script:
-  #         template_file: cloudformation/project.yaml
-  #         parameter_file: cloudformation/parameters.txt
-  #     - print-cloudformation-events
-  #     - get-ec2-pub-ip
-  #     - persist_to_workspace:
-  #         root: workspace
-  #         paths:
-  #           - inventory
-  #     - set_action_rollback
+  create-environment:
+    description: provision the aws infra necessary to deploy code and create the inventory file
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - run:
+          name: install dependencies
+          command: yum install tar gzip curl -y
+      - checkout
+        - run:
+            name: save stack name in environment variable
+            command: |
+              curl --request POST \
+              --url https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/envvar \
+              --header 'content-type: application/json' \
+              -u ${CIRCLE_TOKEN} \
+              --data '{"name":"STACK_NAME","value":"<< pipeline.parameters.stack_name >>"}'
+      - assume-role-with-web-identity:
+          role-arn: arn:aws:iam::726559158740:role/Udacitycicd
+          region: us-west-2
+      - run-cloudformation-script:
+          template_file: cloudformation/project.yaml
+          parameter_file: cloudformation/parameters.txt
+      - print-cloudformation-events
+      - get-ec2-pub-ip
+      - persist_to_workspace:
+          root: workspace
+          paths:
+            - inventory
+      - set_action_rollback
        
-  # deploy-application:
-  #   description: install the application and its dependencies on the provisioned environment
-  #   docker:
-  #     - image: python:3.10.5-alpine3.16
-  #   steps:
-  #     - checkout
-  #     - run:
-  #         name: install dependencies
-  #         command: |
-  #           apk add --update ansible 
-  #           apk add tar gzip curl
-  #     - attach_workspace:
-  #         at: /tmp/workspace
-  #     - run: ls /tmp && ls /tmp/workspace
-  #     - run: cat /tmp/workspace/inventory && cat /tmp/workspace/stack_name.txt
-  #     - add_ssh_keys:
-  #         fingerprints: 
-  #           - "12:38:1a:fe:e3:c6:d4:75:54:1c:f5:a0:51:7e:85:7d"
-  #     - run:
-  #         name: run playbook
-  #         command: |
-  #           cd ansible
-  #           ansible-playbook main.yml -i /tmp/workspace/inventory
-  #     - set_action_rollback
+  deploy-application:
+    description: install the application and its dependencies on the provisioned environment
+    docker:
+      - image: python:3.10.5-alpine3.16
+    steps:
+      - checkout
+      - run:
+          name: install dependencies
+          command: |
+            apk add --update ansible 
+            apk add tar gzip curl
+      - attach_workspace:
+          at: /tmp/workspace
+      - run: ls /tmp && ls /tmp/workspace
+      - run: cat /tmp/workspace/inventory && cat /tmp/workspace/stack_name.txt
+      - add_ssh_keys:
+          fingerprints: 
+            - "12:38:1a:fe:e3:c6:d4:75:54:1c:f5:a0:51:7e:85:7d"
+      - run:
+          name: run playbook
+          command: |
+            cd ansible
+            ansible-playbook main.yml -i /tmp/workspace/inventory
+      - set_action_rollback
          
-  # smoke-test:
-  #   description: check if the url is reachable via curl
-  #   docker:
-  #     - image: alpine:latest
-  #   steps:
-  #     - checkout
-  #     - run:
-  #         name: install dependencies
-  #         command: apk add curl coreutils 
-  #     - run:
-  #         name: check if website is up
-  #         command: |
-  #           URL=http://$(tail -n1 /tmp/workspace/inventory):3000
-  #           if curl -s --head ${URL}
-  #           then
-  #             return 1
-  #           else
-  #             return 1
-  #           fi
-  #     - set_action_rollback
-
-  # rollback:
-  #   description: destroy all resources created for the deployment
-  #   docker:
-  #     - image: amazon/aws-cli
-  #   steps:
-  #     - run:
-  #         name: install dependencies
-  #         command: yum install tar gzip -y
-  #     - attach_workspace:
-  #         at: /tmp/workspace
-  #     - assume-role-with-web-identity:
-  #         role-arn: arn:aws:iam::726559158740:role/Udacitycicd
-  #         region: us-west-2 
-  #     - destroy_environment 
-  test:
+  smoke-test:
+    description: check if the url is reachable via curl
     docker:
       - image: alpine:latest
     steps:
-      - run: apk add curl
+      - checkout
       - run:
-          name: save stack name in environment variable
+          name: install dependencies
+          command: apk add curl coreutils 
+      - run:
+          name: check if website is up
           command: |
-            curl --request POST \
-            --url https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/envvar \
-            --header 'content-type: application/json' \
-            -u ${CIRCLE_TOKEN} \
-            --data '{"name":"STACK_NAME","value":"<< pipeline.parameters.stack_name >>"}'
+            URL=http://$(tail -n1 /tmp/workspace/inventory):3000
+            if curl -s --head ${URL}
+            then
+              return 1
+            else
+              return 1
+            fi
+      - set_action_rollback
+
+  rollback:
+    description: destroy all resources created for the deployment
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - assume-role-with-web-identity:
+          role-arn: arn:aws:iam::726559158740:role/Udacitycicd
+          region: us-west-2 
+      - destroy_environment 
+  
       
 workflows:
-  # deploy:
-  #   when:
-  #     equal: [deploy, << pipeline.parameters.action >>]
-  #   jobs:
-  #     - create-environment:
-  #         context: 
-  #           - aws-federation
-  #     - deploy-application:
-  #         requires:
-  #           - create-environment
-  #     - smoke-test:
-  #         requires:
-  #           - deploy-application
-  # rollback_workflow:
-  #   when:
-  #     equal: [rollback, << pipeline.parameters.action >>]
-  #   jobs:
-  #     - rollback:
-  #         context:
-  #           - aws-federation
-  my-test-workflow:
+  deploy:
+    when:
+      equal: [deploy, << pipeline.parameters.action >>]
     jobs:
-      - test  
-      
+      - create-environment:
+          context: 
+            - aws-federation
+      - deploy-application:
+          requires:
+            - create-environment
+      - smoke-test:
+          requires:
+            - deploy-application
+  rollback_workflow:
+    when:
+      equal: [rollback, << pipeline.parameters.action >>]
+    jobs:
+      - rollback:
+          context:
+            - aws-federation
+  
