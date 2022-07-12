@@ -260,6 +260,7 @@ jobs:
     docker:
       - image: amazon/aws-cli
     steps:
+     - run: sleep 10s
      - run: 
          command: |
            curl --request GET \
