@@ -87,9 +87,8 @@ commands:
               --url https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/envvar \
               -u ${CIRCLE_TOKEN} | grep STACK_NAME)"
 
-            if [ ! -z $delete ]
+            if [ ! -z "$delete" ]
             then
-            #  check the value the var
               curl --request GET \
               --url https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/envvar/STACK_NAME \
               -u ${CIRCLE_TOKEN}
