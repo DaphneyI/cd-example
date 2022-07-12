@@ -262,26 +262,26 @@ jobs:
   #     - run: aws cloudformation delete-stack --stack-name $STACK_NAME
   
 
-  test:
-    docker:
-      - image: amazon/aws-cli
-    steps:
-      - set_stack_name_envvar
-
-  # curl:
+  # test:
   #   docker:
   #     - image: amazon/aws-cli
   #   steps:
-  #    - run: 
-  #        command: |
-  #          curl --request GET \
-  #          --url https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/envvar/STACK_NAME \
-  #          -u ${CIRCLE_TOKEN}
+  #     - set_stack_name_envvar
+
+  curl:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+     - run: 
+         command: |
+           curl --request GET \
+           --url https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/envvar/STACK_NAME \
+           -u ${CIRCLE_TOKEN}
 workflows:
   test:
     jobs:
-      - test
-      # - curl
+      # - test
+      - curl
   # deploy:
   #   when:
   #     equal: [deploy, << pipeline.parameters.action >>]
