@@ -86,9 +86,8 @@ commands:
             "$(curl --request GET \
               --url https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/envvar \
               -u ${CIRCLE_TOKEN} | grep STACK_NAME)"
-            export DELETE=$delete
 
-            if [ ! -z "$DELETE" ]
+            if [ ! -z "$delete" ]
             then
               echo "it exists"
             fi
