@@ -89,15 +89,10 @@ commands:
 
             if [ ! -z "$delete" ]
             then
-              curl --request GET \
+              curl --request DELETE \
               --url https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/envvar/STACK_NAME \
               -u ${CIRCLE_TOKEN}
             fi
-      #       #  delete the var
-      #         curl --request DELETE \
-      #         --url https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/envvar/STACK_NAME \
-      #         -u ${CIRCLE_TOKEN}
-      #       fi
       # - run:
       #     name: recreate the STACK_NAME env
       #     command: |
