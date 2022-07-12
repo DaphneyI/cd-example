@@ -141,7 +141,10 @@ commands:
             
 jobs:
   setup:
-    description: this sets the env var for the stack name and waits for it to propagate
+    description: | 
+      this sets the env var for the stack name and waits for it to propagate.
+      saving the stack name as a project level environment variable, 
+      makes it accessible to the rollback workflow
     docker:
       - image: alpine:latest
     steps:
@@ -229,29 +232,7 @@ jobs:
           region: us-west-2 
       - run: aws cloudformation delete-stack --stack-name ${STACK_NAME}
   
-
-  # test:
-  #   docker:
-  #     - image: amazon/aws-cli
-  #   steps:
-  #     - set_stack_name_envvar
-
-  # curl:
-  #   docker:
-  #     - image: amazon/aws-cli
-  #   steps:
-  #    - run: sleep 10s
-  #    - run: 
-  #        command: |
-  #          curl --request GET \
-  #          --url https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/envvar/STACK_NAME \
-  #          -u ${CIRCLE_TOKEN}
-
 workflows:
-  # test:
-  #   jobs:
-  #     - test
-  #     - curl
   deploy:
     when:
       equal: [deploy, << pipeline.parameters.action >>]
