@@ -269,7 +269,7 @@ workflows:
   test:
     jobs:
       - test
-      # - curl
+      - curl
   # deploy:
   #   when:
   #     equal: [deploy, << pipeline.parameters.action >>]
