@@ -90,9 +90,7 @@ commands:
 
             if [ ! -z "$DELETE" ]
             then
-              curl --request GET \
-              --url https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/envvar/STACK_NAME \
-              -u ${CIRCLE_TOKEN}
+              echo "it exists"
             fi
       #       #  delete the var
       #         curl --request DELETE \
