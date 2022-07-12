@@ -79,12 +79,12 @@ commands:
         type: string
         default: UdacityProject3-${CIRCLE_JOB}-${CIRCLE_WORKFLOW_ID:0:5}
     steps: 
-      - run:
-          name: delete the STACK_NAME env var 
-          command: |
-            curl --request DELETE \
-            -url https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/envvar/STACK_NAME \
-            -u ${CIRCLE_TOKEN}
+      # - run:
+      #     name: delete the STACK_NAME env var 
+      #     command: |
+      #       curl --request DELETE \
+      #       -url https://circleci.com/api/v2/project/gh/DaphneyI/cd-example/envvar/STACK_NAME \
+      #       -u ${CIRCLE_TOKEN}
       - run:
           name: recreate the STACK_NAME env
           command: |
